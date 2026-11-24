@@ -1,11 +1,10 @@
-import React from 'react';
+import Product from '@/components/Product';
 
-const ProductPage = () => {
-  return (
-    <div>
- <h1>Product</h1>
-    </div>
-  );
+export const metadata = {
+  title: 'Products | BagBazar',
+  description: 'Explore our wide collection of premium bags and luggage.',
 };
 
-export default ProductPage;
+export default function ProductsPage() {
+  return <Product />;
+}

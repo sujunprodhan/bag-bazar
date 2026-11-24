@@ -2,7 +2,7 @@ import Product from '@/components/Product';
 
 export const metadata = {
   title: 'Products | BagBazar',
-  description: 'Explore our collection of premium bags.',
+  description: 'Explore our wide collection of premium bags and luggage.',
 };
 
 export default function ProductPage() {
