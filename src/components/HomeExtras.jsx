@@ -39,6 +39,7 @@ const testimonials = [
     name: 'Nusrat Jahan',
     location: 'Dhaka',
     product: 'Ladies Tote Bag',
+    avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
     quote:
       'The stitching and leather finish exceeded my expectations! Delivered within 24 hours with Cash on Delivery.',
   },
@@ -46,6 +47,7 @@ const testimonials = [
     name: 'Tanvir Ahmed',
     location: 'Chattogram',
     product: 'Urban Trek Backpack 40L',
+    avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
     quote:
       'Used this backpack on a 5-day trip to Sajek. Super comfortable straps and completely waterproof.',
   },
@@ -53,6 +55,7 @@ const testimonials = [
     name: 'Farhana Islam',
     location: 'Sylhet',
     product: 'Trolley Luggage Set',
+    avatar: 'https://randomuser.me/api/portraits/women/68.jpg',
     quote:
       'Smooth wheels, sturdy handle, and paid easily via bKash. BagBazar is now my go-to bag store!',
   },
@@ -174,12 +177,20 @@ export default function HomeExtras() {
                     &ldquo;{review.quote}&rdquo;
                   </p>
                 </div>
-                <div className="pt-3 border-t border-gray-100 flex items-center justify-between">
-                  <div>
-                    <p className="font-bold text-sm text-primary">{review.name}</p>
-                    <p className="text-xs text-muted">{review.location}</p>
+                <div className="pt-3 border-t border-gray-100 flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-3 min-w-0">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={review.avatar}
+                      alt={review.name}
+                      className="w-10 h-10 rounded-full object-cover border border-gray-200 shrink-0"
+                    />
+                    <div className="min-w-0">
+                      <p className="font-bold text-sm text-primary truncate">{review.name}</p>
+                      <p className="text-xs text-muted">{review.location}</p>
+                    </div>
                   </div>
-                  <span className="px-2.5 py-1 rounded-full bg-orange-50 text-accent text-[11px] font-semibold">
+                  <span className="px-2.5 py-1 rounded-full bg-orange-50 text-accent text-[11px] font-semibold shrink-0">
                     {review.product}
                   </span>
                 </div>

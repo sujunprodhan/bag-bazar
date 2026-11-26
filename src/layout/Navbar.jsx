@@ -168,9 +168,11 @@ const Navbar = () => {
               aria-label="Shopping Cart"
             >
               <FiShoppingCart className="text-xl" />
-              <span className="absolute -top-0.5 -right-0.5 bg-accent text-white text-[11px] font-bold rounded-full h-5 min-w-5 px-1 flex items-center justify-center shadow-xs">
-                {cartCount}
-              </span>
+              {cartCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 bg-accent text-white text-[11px] font-bold rounded-full h-5 min-w-5 px-1 flex items-center justify-center shadow-xs">
+                  {cartCount}
+                </span>
+              )}
             </Link>
 
             {session?.user ? (
@@ -302,9 +304,11 @@ const Navbar = () => {
               aria-label="Shopping Cart"
             >
               <FiShoppingCart className="text-xl" />
-              <span className="absolute -top-0.5 -right-0.5 bg-accent text-white text-[10px] font-bold rounded-full h-4 min-w-4 px-1 flex items-center justify-center">
-                {cartCount}
-              </span>
+              {cartCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 bg-accent text-white text-[10px] font-bold rounded-full h-4 min-w-4 px-1 flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
             </Link>
 
             <button

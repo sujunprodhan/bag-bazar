@@ -3,7 +3,7 @@ import React from 'react';
 export function ProductCardSkeleton() {
   return (
     <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden flex flex-col animate-pulse">
-      <div className="w-full h-52 bg-gray-200/80 relative">
+      <div className="w-full h-64 sm:h-72 bg-gray-200/80 relative">
         <div className="absolute top-3 left-3 w-12 h-5 rounded-lg bg-gray-300/70" />
         <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-gray-300/70" />
         <div className="absolute bottom-3 left-3 w-16 h-4 rounded-full bg-gray-300/70" />

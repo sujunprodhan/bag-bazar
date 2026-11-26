@@ -40,30 +40,28 @@ const ProductCard = ({ product, index = 0 }) => {
       style={{ animationDelay: `${(index % 9) * 55}ms` }}
       className="animate-card-in bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col group"
     >
-      <div className="relative w-full h-52 bg-gray-50 overflow-hidden">
+      <div className="relative w-full h-64 sm:h-72 bg-white overflow-hidden">
         {mainImage ? (
           <>
             {!imgLoaded && (
-              <div className="absolute inset-0 bg-gray-200 animate-pulse" />
+              <div className="absolute inset-0 bg-gray-100 animate-pulse" />
             )}
             <img
               src={mainImage}
               alt={product.name || 'Product'}
               onLoad={() => setImgLoaded(true)}
               onError={() => setImgLoaded(true)}
-              className={`absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-all duration-500 ${
+              className={`absolute inset-0 w-full h-full object-cover brightness-[1.03] group-hover:scale-105 transition-all duration-500 ${
                 imgLoaded ? 'opacity-100' : 'opacity-0'
               }`}
             />
           </>
         ) : (
-          <div className="absolute inset-0 flex flex-col items-center justify-center w-full h-full text-gray-300">
+          <div className="absolute inset-0 flex flex-col items-center justify-center w-full h-full text-gray-300 bg-gray-50">
             <FiShoppingCart className="text-5xl mb-2" />
             <span className="text-xs">No Image</span>
           </div>
         )}
-
-        <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
         <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
           {discount && (
