@@ -5,7 +5,6 @@ import { useSearchParams } from 'next/navigation';
 import { FiSearch, FiGrid, FiList, FiTag, FiChevronRight, FiX, FiArrowRight } from 'react-icons/fi';
 import ProductCard from './ProductCard';
 
-// Category icon/label map
 const categoryMeta = {
   'all': { label: 'All Products', emoji: '🛍️' },
   'handbag': { label: 'Handbag', emoji: '👜' },
@@ -62,7 +61,6 @@ const ProductFilterClient = ({ initialProducts = [] }) => {
 
   const activeHeroProduct = heroProducts[heroIndex % Math.max(1, heroProducts.length)] || null;
 
-  // Build category list with counts
   const categories = useMemo(() => {
     const countMap = {};
     initialProducts.forEach((p) => {
@@ -109,9 +107,7 @@ const ProductFilterClient = ({ initialProducts = [] }) => {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      {/* ── Animated Product Hero Banner ── */}
       <section className="relative overflow-hidden bg-primary text-white py-12 sm:py-16">
-        {/* Background cycling product images */}
         {heroProducts.map((hp, idx) => (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -127,13 +123,11 @@ const ProductFilterClient = ({ initialProducts = [] }) => {
           />
         ))}
 
-        {/* Rich gradient overlay for crisp text readability */}
         <div className="absolute inset-0 bg-gradient-to-r from-[#0B2135]/95 via-[#0F2A43]/85 to-[#0F2A43]/70 pointer-events-none" />
         <div className="absolute -right-24 -top-24 w-80 h-80 rounded-full bg-accent/25 blur-3xl pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            {/* Left copy */}
             <div className="lg:col-span-7 space-y-4">
               <div className="flex items-center gap-2 text-xs font-semibold text-white/70">
                 <Link href="/" className="hover:text-accent transition-colors">
@@ -163,7 +157,6 @@ const ProductFilterClient = ({ initialProducts = [] }) => {
               </div>
             </div>
 
-            {/* Right animated product spotlight */}
             {activeHeroProduct && (
               <div className="lg:col-span-5 flex flex-col items-center lg:items-end">
                 <Link
@@ -172,7 +165,6 @@ const ProductFilterClient = ({ initialProducts = [] }) => {
                   className="animate-card-in w-full max-w-sm bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 flex items-center gap-4 hover:bg-white/15 transition-all group shadow-2xl"
                 >
                   <div className="w-24 h-24 rounded-xl bg-white overflow-hidden shrink-0 relative">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={activeHeroProduct.images[0]}
                       alt={activeHeroProduct.name}
@@ -222,11 +214,8 @@ const ProductFilterClient = ({ initialProducts = [] }) => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
-        {/* ── Layout: Sidebar + Content ── */}
         <div className="flex gap-6">
 
-          {/* ════ SIDEBAR ════ */}
-          {/* Mobile overlay */}
           {sidebarOpen && (
             <div
               className="fixed inset-0 bg-black/40 z-30 lg:hidden"
@@ -243,7 +232,6 @@ const ProductFilterClient = ({ initialProducts = [] }) => {
               ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
             `}
           >
-            {/* Sidebar header */}
             <div className="flex items-center justify-between p-5 border-b border-gray-100">
               <div className="flex items-center gap-2">
                 <FiTag className="text-orange-500 text-base" />
@@ -257,7 +245,6 @@ const ProductFilterClient = ({ initialProducts = [] }) => {
               </button>
             </div>
 
-            {/* Category list */}
             <ul className="p-3 space-y-1">
               {categories.map((cat) => {
                 const isActive = selectedCategory === cat.slug;
@@ -297,14 +284,11 @@ const ProductFilterClient = ({ initialProducts = [] }) => {
             </ul>
           </aside>
 
-          {/* ════ MAIN CONTENT ════ */}
           <div className="flex-1 min-w-0">
 
-            {/* Toolbar */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-5">
 
               <div className="flex items-center gap-2 w-full sm:w-auto">
-                {/* Mobile sidebar toggle */}
                 <button
                   onClick={() => setSidebarOpen(true)}
                   className="lg:hidden flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-white border border-gray-200 text-sm text-gray-700 font-medium shadow-sm hover:border-orange-400 hover:text-orange-500 transition"
@@ -313,7 +297,6 @@ const ProductFilterClient = ({ initialProducts = [] }) => {
                   {activeCategoryLabel}
                 </button>
 
-                {/* Search */}
                 <div className="relative flex-1 sm:w-64">
                   <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none" />
                   <input
@@ -327,7 +310,6 @@ const ProductFilterClient = ({ initialProducts = [] }) => {
               </div>
 
               <div className="flex items-center gap-2 shrink-0">
-                {/* Sort */}
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
@@ -339,7 +321,6 @@ const ProductFilterClient = ({ initialProducts = [] }) => {
                   <option value="name">Name: A → Z</option>
                 </select>
 
-                {/* View toggle */}
                 <div className="flex items-center bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
                   <button
                     onClick={() => setViewMode('grid')}
@@ -357,7 +338,6 @@ const ProductFilterClient = ({ initialProducts = [] }) => {
               </div>
             </div>
 
-            {/* Active filter chip */}
             {selectedCategory !== 'all' && (
               <div className="flex items-center gap-2 mb-4">
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-100 text-orange-600 text-xs font-semibold">
@@ -372,7 +352,6 @@ const ProductFilterClient = ({ initialProducts = [] }) => {
               </div>
             )}
 
-            {/* Products */}
             {filteredProducts.length === 0 ? (
               <div className="bg-white rounded-2xl p-16 text-center border border-gray-100 shadow-sm">
                 <div className="w-16 h-16 rounded-full bg-orange-50 text-orange-400 flex items-center justify-center mx-auto text-2xl mb-4">

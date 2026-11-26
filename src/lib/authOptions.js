@@ -124,7 +124,6 @@ export const authOptions = {
             }
           }
         } catch {
-          // ignore DB error
         }
       }
       return token;

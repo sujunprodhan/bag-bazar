@@ -114,7 +114,6 @@ export const generateInvoiceHtml = (order) => {
     paymentStatus.toLowerCase().includes('paid') ||
     paymentStatus.toLowerCase().includes('approved');
 
-  // Build items rows
   const itemRowsHtml = items
     .map((item, index) => {
       const title = item.title || item.name || 'Product';
@@ -525,7 +524,6 @@ export const sendOrderInvoiceEmail = async (order) => {
   const subject = `🛒 Order Invoice & Receipt #${shortId} - SupperShop`;
   const html = generateInvoiceHtml(order);
 
-  // 1. Send primary invoice to customer's
   const result = await sendEmail({
     to: order.userEmail,
     subject,

@@ -234,9 +234,7 @@ export default function CheckoutPage() {
         </h1>
 
         <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Left: Shipping & Payment */}
           <div className="lg:col-span-7 space-y-6">
-            {/* Shipping Info */}
             <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-xs space-y-4">
               <h2 className="font-heading font-bold text-lg text-gray-900 flex items-center gap-2">
                 <FiTruck className="text-orange-500" />
@@ -345,7 +343,6 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            {/* Payment Method */}
             <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-xs space-y-4">
               <h2 className="font-heading font-bold text-lg text-gray-900 flex items-center gap-2">
                 <FiSmartphone className="text-orange-500" />
@@ -427,7 +424,6 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          {/* Right: Order Summary */}
           <div className="lg:col-span-5">
             <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-xs sticky top-24 space-y-5">
               <h2 className="font-heading font-bold text-lg text-gray-900 border-b border-gray-100 pb-3">

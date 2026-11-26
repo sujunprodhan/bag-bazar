@@ -8,17 +8,17 @@ import {
 } from 'react-icons/fi';
 
 const categoryMeta = {
-  'handbag':         { label: 'Handbag',         icon: FiShoppingBag, gradient: 'from-rose-400 via-pink-500 to-purple-600' },
-  'ladies-bag':      { label: 'Ladies Bag',      icon: FiStar,        gradient: 'from-purple-400 via-violet-500 to-indigo-600' },
-  'tote-bag':        { label: 'Tote Bag',        icon: FiPackage,     gradient: 'from-blue-400 via-cyan-500 to-teal-600' },
-  'backpack':        { label: 'Backpack',        icon: FiGrid,        gradient: 'from-emerald-400 via-green-500 to-lime-600' },
-  'travel-bag':      { label: 'Travel Bag',      icon: FiBriefcase,   gradient: 'from-orange-400 via-amber-500 to-yellow-500' },
-  'trolley-luggage': { label: 'Trolley Luggage', icon: FiAnchor,      gradient: 'from-cyan-400 via-sky-500 to-blue-600' },
-  'school-bag':      { label: 'School Bag',      icon: FiBook,        gradient: 'from-yellow-400 via-orange-400 to-red-500' },
-  'gym-duffel-bag':  { label: 'Gym Duffel',      icon: FiDroplet,     gradient: 'from-red-400 via-rose-500 to-pink-600' },
-  'baby-bag':        { label: 'Baby Bag',        icon: FiUser,        gradient: 'from-lime-400 via-green-400 to-emerald-500' },
-  'umbrella':        { label: 'Umbrella',        icon: FiUmbrella,    gradient: 'from-indigo-400 via-purple-400 to-violet-600' },
-  'raincoat':        { label: 'Raincoat',        icon: FiWind,        gradient: 'from-teal-400 via-cyan-500 to-sky-600' },
+  'handbag':         { label: 'Handbag',         icon: FiShoppingBag, linear: 'from-rose-400 via-pink-500 to-purple-600' },
+  'ladies-bag':      { label: 'Ladies Bag',      icon: FiStar,        linear: 'from-purple-400 via-violet-500 to-indigo-600' },
+  'tote-bag':        { label: 'Tote Bag',        icon: FiPackage,     linear: 'from-blue-400 via-cyan-500 to-teal-600' },
+  'backpack':        { label: 'Backpack',        icon: FiGrid,        linear: 'from-emerald-400 via-green-500 to-lime-600' },
+  'travel-bag':      { label: 'Travel Bag',      icon: FiBriefcase,   linear: 'from-orange-400 via-amber-500 to-yellow-500' },
+  'trolley-luggage': { label: 'Trolley Luggage', icon: FiAnchor,      linear: 'from-cyan-400 via-sky-500 to-blue-600' },
+  'school-bag':      { label: 'School Bag',      icon: FiBook,        linear: 'from-yellow-400 via-orange-400 to-red-500' },
+  'gym-duffel-bag':  { label: 'Gym Duffel',      icon: FiDroplet,     linear: 'from-red-400 via-rose-500 to-pink-600' },
+  'baby-bag':        { label: 'Baby Bag',        icon: FiUser,        linear: 'from-lime-400 via-green-400 to-emerald-500' },
+  'umbrella':        { label: 'Umbrella',        icon: FiUmbrella,    linear: 'from-indigo-400 via-purple-400 to-violet-600' },
+  'raincoat':        { label: 'Raincoat',        icon: FiWind,        linear: 'from-teal-400 via-cyan-500 to-sky-600' },
 };
 
 const formatLabel = (slug) =>
@@ -32,10 +32,8 @@ const CategoryCard = ({ cat }) => {
       href={`/product?category=${encodeURIComponent(cat.slug)}`}
       className="flex-shrink-0 w-44 h-60 rounded-3xl overflow-hidden relative group cursor-pointer shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300"
     >
-      {/* Fallback gradient */}
-      <div className={`absolute inset-0 bg-gradient-to-b ${cat.gradient}`} />
+      <div className={`absolute inset-0 bg-linear-to-b ${cat.linear}`} />
 
-      {/* Product image */}
       {cat.image && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
@@ -45,17 +43,14 @@ const CategoryCard = ({ cat }) => {
         />
       )}
 
-      {/* Dark gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-black/10" />
+      <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/25 to-black/10" />
 
-      {/* Frosted icon box */}
       <div className="absolute top-1/2 -translate-y-4 left-4">
         <div className="w-10 h-10 rounded-xl bg-white/25 backdrop-blur-md border border-white/35 flex items-center justify-center group-hover:bg-white/35 transition-colors shadow-sm">
           <Icon className="text-white text-lg" />
         </div>
       </div>
 
-      {/* Bottom text */}
       <div className="absolute bottom-0 left-0 right-0 p-4">
         <p className="text-white font-bold text-base leading-tight mb-1 drop-shadow-xs">
           {cat.label}
@@ -80,7 +75,7 @@ const CategoryMarquee = ({ products = [] }) => {
           slug,
           label: formatLabel(slug),
           icon: meta.icon || FiTag,
-          gradient: meta.gradient || 'from-slate-500 to-slate-700',
+          linear: meta.linear || 'from-slate-500 to-slate-700',
           image: p.images?.[0] || null,
           count: 0,
         };
@@ -98,7 +93,7 @@ const CategoryMarquee = ({ products = [] }) => {
       slug,
       label: meta.label,
       icon: meta.icon,
-      gradient: meta.gradient,
+      linear: meta.linear,
       image: null,
       count: 0,
     }));
@@ -114,8 +109,8 @@ const CategoryMarquee = ({ products = [] }) => {
       </div>
 
       <div className="relative overflow-hidden">
-        <div className="pointer-events-none absolute left-0 top-0 h-full w-20 bg-gradient-to-r from-white to-transparent z-10" />
-        <div className="pointer-events-none absolute right-0 top-0 h-full w-20 bg-gradient-to-l from-white to-transparent z-10" />
+        <div className="pointer-events-none absolute left-0 top-0 h-full w-20 bg-linear-to-r from-white to-transparent z-10" />
+        <div className="pointer-events-none absolute right-0 top-0 h-full w-20 bg-linear-to-l from-white to-transparent z-10" />
 
         <div className="flex gap-4 w-max animate-marquee-left px-4">
           {doubled.map((cat, i) => (

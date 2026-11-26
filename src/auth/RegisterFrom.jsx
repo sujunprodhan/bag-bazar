@@ -57,7 +57,6 @@ const RegisterFrom = () => {
         return;
       }
 
-      // Auto sign-in after successful registration
       const loginRes = await signIn('credentials', {
         email: data.email,
         password: data.password,
@@ -84,7 +83,6 @@ const RegisterFrom = () => {
     <section className="min-h-[85vh] bg-gray-50 py-12 flex items-center">
       <Container>
         <div className="max-w-md mx-auto bg-white rounded-3xl border border-gray-100 shadow-lg p-7 sm:p-9 animate-card-in">
-          {/* Brand header */}
           <div className="text-center mb-7">
             <div className="w-12 h-12 rounded-2xl bg-primary text-accent flex items-center justify-center mx-auto mb-3 shadow-sm">
               <FiShoppingBag className="text-2xl" />
@@ -97,7 +95,6 @@ const RegisterFrom = () => {
             </p>
           </div>
 
-          {/* Error Alert */}
           {authError && (
             <div className="mb-5 flex items-center gap-2.5 px-4 py-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-600 text-xs font-semibold">
               <FiAlertCircle className="text-base shrink-0" />
@@ -105,9 +102,7 @@ const RegisterFrom = () => {
             </div>
           )}
 
-          {/* Form */}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
-            {/* Full Name */}
             <div>
               <label className="block text-xs font-semibold text-gray-700 mb-1.5">
                 Full Name
@@ -136,7 +131,6 @@ const RegisterFrom = () => {
               )}
             </div>
 
-            {/* Email */}
             <div>
               <label className="block text-xs font-semibold text-gray-700 mb-1.5">
                 Email Address
@@ -165,7 +159,6 @@ const RegisterFrom = () => {
               )}
             </div>
 
-            {/* Password */}
             <div>
               <label className="block text-xs font-semibold text-gray-700 mb-1.5">
                 Password
@@ -204,7 +197,6 @@ const RegisterFrom = () => {
               )}
             </div>
 
-            {/* Confirm Password */}
             <div>
               <label className="block text-xs font-semibold text-gray-700 mb-1.5">
                 Confirm Password
@@ -232,7 +224,6 @@ const RegisterFrom = () => {
               )}
             </div>
 
-            {/* Submit */}
             <button
               type="submit"
               disabled={isSubmitting || googleLoading}
@@ -252,7 +243,6 @@ const RegisterFrom = () => {
             </button>
           </form>
 
-          {/* Divider */}
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-200" />
@@ -262,7 +252,6 @@ const RegisterFrom = () => {
             </div>
           </div>
 
-          {/* Google Register */}
           <button
             type="button"
             onClick={handleGoogleRegister}
@@ -277,7 +266,6 @@ const RegisterFrom = () => {
             <span>Continue with Google</span>
           </button>
 
-          {/* Footer link */}
           <p className="text-center text-xs text-gray-500 mt-6">
             Already have an account?{' '}
             <Link href="/login" className="text-accent font-bold hover:underline">

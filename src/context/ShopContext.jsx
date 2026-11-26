@@ -75,7 +75,6 @@ export function ShopProvider({ children }) {
         description: product.name,
       });
 
-      // Optimistic update
       setCart((prev) => {
         const idx = prev.findIndex((i) => i.key === itemKey);
         if (idx > -1) {

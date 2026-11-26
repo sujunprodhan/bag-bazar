@@ -52,7 +52,6 @@ export default function CartPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            {/* Cart items */}
             <div className="lg:col-span-8 space-y-4">
               {cart.map((item, idx) => (
                 <div
@@ -60,7 +59,6 @@ export default function CartPage() {
                   style={{ animationDelay: `${idx * 45}ms` }}
                   className="animate-card-in bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4 shadow-xs"
                 >
-                  {/* Image */}
                   <Link
                     href={`/product/${item.productId || item._id}`}
                     className="w-24 h-24 rounded-xl bg-gray-50 overflow-hidden shrink-0 border border-gray-100 relative"
@@ -79,7 +77,6 @@ export default function CartPage() {
                     )}
                   </Link>
 
-                  {/* Info */}
                   <div className="flex-1 min-w-0">
                     <span className="text-[10px] font-bold text-orange-500 uppercase tracking-widest">
                       {item.category?.replace(/-/g, ' ')}
@@ -103,7 +100,6 @@ export default function CartPage() {
                     </p>
                   </div>
 
-                  {/* Quantity & Remove */}
                   <div className="flex items-center gap-4 self-end sm:self-center">
                     <div className="inline-flex items-center border border-gray-200 rounded-xl overflow-hidden">
                       <button
@@ -152,7 +148,6 @@ export default function CartPage() {
               </Link>
             </div>
 
-            {/* Order Summary */}
             <div className="lg:col-span-4">
               <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-xs sticky top-24 space-y-5">
                 <h2 className="font-heading font-bold text-lg text-gray-900 border-b border-gray-100 pb-3">

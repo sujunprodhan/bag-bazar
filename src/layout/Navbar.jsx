@@ -20,20 +20,41 @@ import NavLinks from '@/buttons/NavLink';
 import Container from './Container';
 import { useShop } from '@/context/ShopContext';
 
+const productCategories = [
+  { name: 'All Products', href: '/product' },
+  { name: 'Backpack', href: '/product?category=backpack' },
+  { name: 'Travel Bag', href: '/product?category=travel-bag' },
+  { name: 'Ladies Bag', href: '/product?category=ladies-bag' },
+  { name: 'Tote Bag', href: '/product?category=tote-bag' },
+  { name: 'Handbag', href: '/product?category=handbag' },
+  { name: 'School Bag', href: '/product?category=school-bag' },
+  { name: 'Baby Bag', href: '/product?category=baby-bag' },
+  { name: 'Trolley Luggage', href: '/product?category=trolley-luggage' },
+  { name: 'Gym Duffel Bag', href: '/product?category=gym-duffel-bag' },
+  { name: 'Umbrella', href: '/product?category=umbrella' },
+  { name: 'Raincoat', href: '/product?category=raincoat' },
+];
+
 const Navbar = () => {
   const router = useRouter();
   const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [productMenuOpen, setProductMenuOpen] = useState(false);
+  const [mobileProductOpen, setMobileProductOpen] = useState(false);
   const [imgError, setImgError] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const { cartCount, favoritesCount } = useShop();
   const menuRef = useRef(null);
+  const productMenuRef = useRef(null);
 
   useEffect(() => {
     const handleOutside = (e) => {
       if (menuRef.current && !menuRef.current.contains(e.target)) {
         setUserMenuOpen(false);
+      }
+      if (productMenuRef.current && !productMenuRef.current.contains(e.target)) {
+        setProductMenuOpen(false);
       }
     };
     document.addEventListener('mousedown', handleOutside);
@@ -69,11 +90,51 @@ const Navbar = () => {
           </Link>
 
           <div className="hidden lg:flex items-center gap-1">
-            {navLinks.map((link) => (
-              <NavLinks key={link.href} href={link.href}>
-                {link.name}
-              </NavLinks>
-            ))}
+            {navLinks.map((link) =>
+              link.name === 'Product' ? (
+                <div
+                  key={link.href}
+                  ref={productMenuRef}
+                  className="relative group"
+                  onMouseEnter={() => setProductMenuOpen(true)}
+                  onMouseLeave={() => setProductMenuOpen(false)}
+                >
+                  <div className="flex items-center">
+                    <NavLinks href={link.href}>
+                      <span className="inline-flex items-center gap-1">
+                        <span>{link.name}</span>
+                        <FiChevronDown
+                          className={`text-xs transition-transform duration-200 ${
+                            productMenuOpen ? 'rotate-180' : ''
+                          }`}
+                        />
+                      </span>
+                    </NavLinks>
+                  </div>
+
+                  {productMenuOpen && (
+                    <div className="absolute left-0 top-full pt-2 w-72 z-50">
+                      <div className="bg-white rounded-2xl border border-gray-100 shadow-xl p-3 grid grid-cols-2 gap-1 animate-card-in">
+                        {productCategories.map((cat) => (
+                          <Link
+                            key={cat.href}
+                            href={cat.href}
+                            onClick={() => setProductMenuOpen(false)}
+                            className="px-3 py-2 rounded-xl text-xs font-semibold text-gray-700 hover:bg-orange-50 hover:text-accent transition truncate"
+                          >
+                            {cat.name}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <NavLinks key={link.href} href={link.href}>
+                  {link.name}
+                </NavLinks>
+              )
+            )}
           </div>
 
           <div className="hidden md:flex items-center gap-3">
@@ -270,13 +331,51 @@ const Navbar = () => {
             </form>
 
             <div className="flex flex-col space-y-1 px-2">
-              {navLinks.map((link) => (
-                <div key={link.href} onClick={() => setIsOpen(false)}>
-                  <NavLinks href={link.href} className="block w-full py-2.5">
-                    {link.name}
-                  </NavLinks>
-                </div>
-              ))}
+              {navLinks.map((link) =>
+                link.name === 'Product' ? (
+                  <div key={link.href} className="space-y-1">
+                    <div className="flex items-center justify-between">
+                      <div onClick={() => setIsOpen(false)} className="flex-1">
+                        <NavLinks href={link.href} className="block w-full py-2.5">
+                          {link.name}
+                        </NavLinks>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setMobileProductOpen((prev) => !prev)}
+                        aria-label="Toggle product categories"
+                        className="p-2 text-primary hover:text-accent cursor-pointer"
+                      >
+                        <FiChevronDown
+                          className={`text-base transition-transform ${
+                            mobileProductOpen ? 'rotate-180' : ''
+                          }`}
+                        />
+                      </button>
+                    </div>
+                    {mobileProductOpen && (
+                      <div className="grid grid-cols-2 gap-1 pl-3 pb-2">
+                        {productCategories.map((cat) => (
+                          <Link
+                            key={cat.href}
+                            href={cat.href}
+                            onClick={() => setIsOpen(false)}
+                            className="px-2.5 py-1.5 rounded-lg bg-light-section text-xs font-medium text-gray-700 hover:text-accent truncate"
+                          >
+                            {cat.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div key={link.href} onClick={() => setIsOpen(false)}>
+                    <NavLinks href={link.href} className="block w-full py-2.5">
+                      {link.name}
+                    </NavLinks>
+                  </div>
+                )
+              )}
             </div>
 
             <div className="pt-3 border-t border-light-section flex flex-col gap-2 px-2">

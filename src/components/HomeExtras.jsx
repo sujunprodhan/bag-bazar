@@ -61,7 +61,6 @@ const testimonials = [
 export default function HomeExtras() {
   return (
     <>
-      {/* ── Promo Offer Banner ── */}
       <section className="py-14 bg-gray-50">
         <Container>
           <div className="relative overflow-hidden rounded-3xl bg-primary text-white p-8 sm:p-12 lg:p-14 shadow-xl">
@@ -103,7 +102,6 @@ export default function HomeExtras() {
         </Container>
       </section>
 
-      {/* ── Why Choose Us ── */}
       <section className="py-14 bg-white border-t border-gray-100">
         <Container>
           <div className="text-center max-w-2xl mx-auto mb-10">
@@ -139,7 +137,6 @@ export default function HomeExtras() {
         </Container>
       </section>
 
-      {/* ── Customer Reviews ── */}
       <section className="py-14 bg-gray-50 border-t border-gray-100">
         <Container>
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">

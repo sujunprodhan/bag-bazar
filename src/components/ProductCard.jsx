@@ -40,14 +40,12 @@ const ProductCard = ({ product, index = 0 }) => {
       style={{ animationDelay: `${(index % 9) * 55}ms` }}
       className="animate-card-in bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col group"
     >
-      {/* ── Image Section ── */}
       <div className="relative w-full h-52 bg-gray-50 overflow-hidden">
         {mainImage ? (
           <>
             {!imgLoaded && (
               <div className="absolute inset-0 bg-gray-200 animate-pulse" />
             )}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={mainImage}
               alt={product.name || 'Product'}
@@ -65,10 +63,8 @@ const ProductCard = ({ product, index = 0 }) => {
           </div>
         )}
 
-        {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-        {/* Top-left badges */}
         <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
           {discount && (
             <span className="px-2.5 py-1 rounded-lg bg-orange-500 text-white text-[11px] font-bold shadow">
@@ -82,7 +78,6 @@ const ProductCard = ({ product, index = 0 }) => {
           )}
         </div>
 
-        {/* Wishlist button */}
         <button
           type="button"
           onClick={() => toggleFavorite(product)}
@@ -95,7 +90,6 @@ const ProductCard = ({ product, index = 0 }) => {
           />
         </button>
 
-        {/* Stock badge */}
         <span
           className={`absolute bottom-3 left-3 z-10 px-2 py-0.5 rounded-full text-[10px] font-bold ${
             product.inStock
@@ -107,14 +101,11 @@ const ProductCard = ({ product, index = 0 }) => {
         </span>
       </div>
 
-      {/* ── Info Section ── */}
       <div className="p-4 flex flex-col flex-1 gap-3">
-        {/* Category */}
         <span className="text-[10px] font-bold text-orange-500 uppercase tracking-widest">
           {product.category?.replace(/-/g, ' ') || 'Bag'}
         </span>
 
-        {/* Name */}
         <Link
           href={`/product/${product._id}`}
           className="font-bold text-sm text-gray-900 hover:text-orange-500 transition-colors line-clamp-2 leading-snug"
@@ -123,7 +114,6 @@ const ProductCard = ({ product, index = 0 }) => {
           {product.name}
         </Link>
 
-        {/* Colors */}
         {Array.isArray(product.colors) && product.colors.length > 0 && (
           <div className="flex items-center gap-1.5">
             {product.colors.slice(0, 5).map((c, i) => {
@@ -145,7 +135,6 @@ const ProductCard = ({ product, index = 0 }) => {
           </div>
         )}
 
-        {/* Price row */}
         <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
           <div className="flex items-baseline gap-2">
             <span className="font-extrabold text-lg text-gray-900">
@@ -158,7 +147,6 @@ const ProductCard = ({ product, index = 0 }) => {
             )}
           </div>
 
-          {/* First size */}
           {Array.isArray(product.sizes) && product.sizes[0] && (
             <span className="px-2 py-0.5 rounded-md bg-gray-100 text-gray-600 text-[11px] font-semibold">
               {product.sizes[0]}
@@ -166,7 +154,6 @@ const ProductCard = ({ product, index = 0 }) => {
           )}
         </div>
 
-        {/* Buttons */}
         <div className="grid grid-cols-2 gap-2">
           <Link
             href={`/product/${product._id}`}

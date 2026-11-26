@@ -57,7 +57,6 @@ const Contact = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      {/* ── Hero Banner ── */}
       <section className="relative overflow-hidden bg-primary text-white py-16 sm:py-20">
         <div className="absolute -right-24 -top-24 w-80 h-80 rounded-full bg-accent/20 blur-3xl pointer-events-none" />
         <div className="absolute -left-24 -bottom-24 w-72 h-72 rounded-full bg-white/10 blur-3xl pointer-events-none" />
@@ -81,7 +80,6 @@ const Contact = () => {
         </Container>
       </section>
 
-      {/* ── Contact Info Cards ── */}
       <section className="py-12">
         <Container>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-12">
@@ -105,7 +103,6 @@ const Contact = () => {
             })}
           </div>
 
-          {/* ── Form & FAQ ── */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             <div className="lg:col-span-7 bg-white rounded-3xl border border-gray-100 p-7 sm:p-9 shadow-xs">
               <h2 className="font-heading font-extrabold text-2xl text-primary mb-1">

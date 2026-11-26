@@ -104,7 +104,6 @@ export default function AdminDashboardClient({ user, initialData }) {
     };
   }, [activeTab]);
 
-  // Add / Edit Product form state
   const [showProductForm, setShowProductForm] = useState(false);
   const [editingProductId, setEditingProductId] = useState(null);
   const [savingProduct, setSavingProduct] = useState(false);
@@ -283,7 +282,6 @@ export default function AdminDashboardClient({ user, initialData }) {
   return (
     <div className="bg-gray-50 min-h-screen py-10">
       <Container>
-        {/* Header */}
         <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <span className="inline-block px-2.5 py-0.5 rounded-full bg-primary text-accent text-[11px] font-bold uppercase tracking-wider mb-1.5">
@@ -303,7 +301,6 @@ export default function AdminDashboardClient({ user, initialData }) {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Sidebar */}
           <aside className="lg:col-span-3">
             <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-xs space-y-4 sticky top-24">
               <div className="pb-4 border-b border-gray-100">
@@ -346,9 +343,7 @@ export default function AdminDashboardClient({ user, initialData }) {
             </div>
           </aside>
 
-          {/* Main */}
           <main className="lg:col-span-9 space-y-6">
-            {/* Overview Tab */}
             {activeTab === 'overview' && (
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -396,7 +391,6 @@ export default function AdminDashboardClient({ user, initialData }) {
                   </div>
                 </div>
 
-                {/* Recent Orders */}
                 <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-xs">
                   <div className="flex items-center justify-between mb-4">
                     <h2 className="font-heading font-bold text-lg text-primary">Recent Orders</h2>
@@ -450,7 +444,6 @@ export default function AdminDashboardClient({ user, initialData }) {
               </>
             )}
 
-            {/* Orders Tab */}
             {activeTab === 'orders' && (
               <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-xs space-y-4">
                 <h2 className="font-heading font-bold text-xl text-primary">Manage Orders</h2>
@@ -526,7 +519,6 @@ export default function AdminDashboardClient({ user, initialData }) {
               </div>
             )}
 
-            {/* Products Tab */}
             {activeTab === 'products' && (
               <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-xs space-y-5">
                 <div className="flex items-center justify-between">
@@ -850,7 +842,6 @@ export default function AdminDashboardClient({ user, initialData }) {
               </div>
             )}
 
-            {/* Users Tab */}
             {activeTab === 'users' && (
               <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-xs space-y-4">
                 <h2 className="font-heading font-bold text-xl text-primary">Manage Users</h2>
@@ -902,10 +893,8 @@ export default function AdminDashboardClient({ user, initialData }) {
                 </div>
               </div>
             )}
-            {/* Live Chat Tab */}
             {activeTab === 'chat' && (
               <div className="bg-white rounded-2xl border border-gray-100 shadow-xs overflow-hidden grid grid-cols-1 md:grid-cols-12 min-h-[460px]">
-                {/* Threads List */}
                 <div className="md:col-span-4 border-b md:border-b-0 md:border-r border-gray-100 p-4 space-y-2">
                   <h2 className="font-heading font-bold text-base text-primary px-2 pb-2 border-b border-gray-100">
                     Customer Chats
@@ -945,7 +934,6 @@ export default function AdminDashboardClient({ user, initialData }) {
                   )}
                 </div>
 
-                {/* Active Conversation */}
                 <div className="md:col-span-8 flex flex-col">
                   {activeThread ? (
                     <>

@@ -9,17 +9,21 @@ const PRODUCTS_PER_PAGE = 9;
 const HomeCategorySection = ({ products = [] }) => {
   const [page, setPage] = useState(0);
 
-  const totalPages = Math.ceil(products.length / PRODUCTS_PER_PAGE);
-  const start = page * PRODUCTS_PER_PAGE;
-  const currentProducts = products.slice(start, start + PRODUCTS_PER_PAGE);
+  const featuredProducts = products.filter(
+    (p) => p.isNewArrival || p.category === 'school-bag' || p.category === 'baby-bag'
+  );
+  const displayList = featuredProducts.length > 0 ? featuredProducts : products;
 
-  if (!products.length) return null;
+  const totalPages = Math.ceil(displayList.length / PRODUCTS_PER_PAGE);
+  const start = page * PRODUCTS_PER_PAGE;
+  const currentProducts = displayList.slice(start, start + PRODUCTS_PER_PAGE);
+
+  if (!displayList.length) return null;
 
   return (
     <section className="bg-gray-50 py-14">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        {/* ── Header ── */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
           <div>
             <p className="text-orange-500 text-xs font-bold tracking-widest uppercase mb-1">
@@ -29,7 +33,7 @@ const HomeCategorySection = ({ products = [] }) => {
               Featured Products
             </h2>
             <p className="text-gray-400 text-sm mt-1">
-              Showing {start + 1}–{Math.min(start + PRODUCTS_PER_PAGE, products.length)} of {products.length} products
+              Showing {start + 1}–{Math.min(start + PRODUCTS_PER_PAGE, displayList.length)} of {displayList.length} products (New Arrivals, School Bag &amp; Baby Bag)
             </p>
           </div>
 
@@ -41,17 +45,14 @@ const HomeCategorySection = ({ products = [] }) => {
           </Link>
         </div>
 
-        {/* ── Product Grid (3×3) ── */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
           {currentProducts.map((product, idx) => (
             <ProductCard key={`${page}-${product._id}`} product={product} index={idx} />
           ))}
         </div>
 
-        {/* ── Pagination ── */}
         {totalPages > 1 && (
           <div className="flex items-center justify-center gap-2">
-            {/* Prev */}
             <button
               onClick={() => setPage((p) => Math.max(0, p - 1))}
               disabled={page === 0}
@@ -61,10 +62,8 @@ const HomeCategorySection = ({ products = [] }) => {
               Prev
             </button>
 
-            {/* Page numbers */}
             <div className="flex items-center gap-1.5">
               {Array.from({ length: totalPages }).map((_, idx) => {
-                // Show first, last, current and neighbours; collapse others with …
                 const showPage =
                   idx === 0 ||
                   idx === totalPages - 1 ||
@@ -97,7 +96,6 @@ const HomeCategorySection = ({ products = [] }) => {
               })}
             </div>
 
-            {/* Next */}
             <button
               onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
               disabled={page === totalPages - 1}

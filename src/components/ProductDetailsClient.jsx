@@ -36,7 +36,6 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }) 
     <div className="bg-gray-50 min-h-screen py-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        {/* Back */}
         <Link
           href="/product"
           className="inline-flex items-center gap-1.5 text-gray-400 text-sm hover:text-orange-500 transition-colors mb-6"
@@ -44,10 +43,8 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }) 
           <FiArrowLeft /> Back to Products
         </Link>
 
-        {/* Main card */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 md:p-10 grid grid-cols-1 md:grid-cols-2 gap-10 mb-14">
 
-          {/* ── Images ── */}
           <div className="flex flex-col gap-3">
             <div className="relative w-full h-96 md:h-[480px] rounded-2xl overflow-hidden bg-gray-50 border border-gray-100">
               {images.length > 0 ? (
@@ -76,7 +73,6 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }) 
               )}
             </div>
 
-            {/* Thumbnails */}
             {images.length > 1 && (
               <div className="flex gap-2 overflow-x-auto pb-1">
                 {images.map((img, i) => (
@@ -87,7 +83,6 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }) 
                       activeImg === i ? 'border-orange-500 shadow' : 'border-gray-200 hover:border-orange-300'
                     }`}
                   >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={img} alt={`view ${i + 1}`} className="w-full h-full object-cover" />
                   </button>
                 ))}
@@ -95,9 +90,7 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }) 
             )}
           </div>
 
-          {/* ── Details ── */}
           <div className="flex flex-col gap-5">
-            {/* Top row */}
             <div className="flex items-start justify-between gap-2">
               <span className="text-xs font-bold text-orange-500 uppercase tracking-widest">
                 {product.category?.replace(/-/g, ' ') || 'Bag'}
@@ -122,12 +115,10 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }) 
               </div>
             </div>
 
-            {/* Name */}
             <h1 className="font-extrabold text-2xl sm:text-3xl text-gray-900 leading-tight">
               {product.name}
             </h1>
 
-            {/* Price */}
             <div className="flex items-baseline gap-3">
               <span className="font-extrabold text-3xl text-orange-500">
                 ৳{product.price?.toLocaleString()}
@@ -144,12 +135,10 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }) 
               )}
             </div>
 
-            {/* Description */}
             <p className="text-gray-500 text-sm leading-relaxed border-t border-gray-100 pt-4">
               {product.shortDescription || product.description || 'No description available.'}
             </p>
 
-            {/* Colors */}
             {Array.isArray(product.colors) && product.colors.length > 0 && (
               <div className="space-y-2">
                 <p className="text-sm font-semibold text-gray-700">
@@ -179,7 +168,6 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }) 
               </div>
             )}
 
-            {/* Sizes */}
             {Array.isArray(product.sizes) && product.sizes.length > 0 && (
               <div className="space-y-2">
                 <p className="text-sm font-semibold text-gray-700">
@@ -203,7 +191,6 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }) 
               </div>
             )}
 
-            {/* Stock count */}
             {product.stock != null && (
               <p className="text-xs text-gray-400">
                 {product.stock > 0 ? (
@@ -214,7 +201,6 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }) 
               </p>
             )}
 
-            {/* Quantity */}
             <div className="space-y-2">
               <p className="text-sm font-semibold text-gray-700">Quantity</p>
               <div className="inline-flex items-center border-2 border-gray-200 rounded-xl overflow-hidden">
@@ -238,7 +224,6 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }) 
               </div>
             </div>
 
-            {/* CTA */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
               <button
                 type="button"
@@ -293,7 +278,6 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }) 
           </div>
         </div>
 
-        {/* Related Products */}
         {relatedProducts.length > 0 && (
           <div>
             <h2 className="font-extrabold text-2xl text-gray-900 mb-6">Related Products</h2>

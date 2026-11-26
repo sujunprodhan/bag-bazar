@@ -4,12 +4,10 @@ import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { FiHeadphones, FiX, FiSend, FiLoader, FiLock } from 'react-icons/fi';
 import { FaWhatsapp } from 'react-icons/fa';
-import {
-  getUserChatMessagesAction,
-  sendChatMessageAction,
-} from '@/actions/server/chat';
+import { getUserChatMessagesAction, sendChatMessageAction } from '@/actions/server/chat';
 
-const WHATSAPP_NUMBER = '8801700000000';
+const RAW_WHATSAPP = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '8801746017448';
+const WHATSAPP_NUMBER = RAW_WHATSAPP.replace(/\D/g, '');
 const WHATSAPP_TEXT = encodeURIComponent('Hello BagBazar! I need help with a product.');
 
 export default function LiveChatWidget() {
@@ -67,16 +65,15 @@ export default function LiveChatWidget() {
     <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end gap-3">
       {open && (
         <div className="w-80 sm:w-96 bg-white rounded-2xl border border-gray-200 shadow-2xl overflow-hidden flex flex-col animate-card-in">
-          {/* Header */}
           <div className="bg-primary text-white px-4 py-3.5 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
               <div>
-                <p className="font-heading font-bold text-sm leading-tight">
-                  BagBazar Live Chat
-                </p>
+                <p className="font-heading font-bold text-sm leading-tight">BagBazar Live Chat</p>
                 <p className="text-[11px] text-white/70">
-                  {isLoggedIn ? `Chatting as ${session.user.name || session.user.email}` : 'Login required to chat'}
+                  {isLoggedIn
+                    ? `Chatting as ${session.user.name || session.user.email}`
+                    : 'Login required to chat'}
                 </p>
               </div>
             </div>
@@ -137,7 +134,6 @@ export default function LiveChatWidget() {
             </div>
           ) : (
             <>
-              {/* Messages */}
               <div className="h-72 overflow-y-auto p-4 space-y-3 bg-gray-50">
                 {messages.length === 0 ? (
                   <div className="text-center text-xs text-muted py-10 space-y-1">
@@ -185,7 +181,6 @@ export default function LiveChatWidget() {
                 </p>
               )}
 
-              {/* Input */}
               <form
                 onSubmit={handleSend}
                 className="p-3 bg-white border-t border-gray-100 flex items-center gap-2"
@@ -215,7 +210,6 @@ export default function LiveChatWidget() {
         </div>
       )}
 
-      {/* Floating Right-Side Buttons (Vertical: Live Support on top, WhatsApp below) */}
       <div className="flex flex-col items-end gap-3">
         <button
           type="button"

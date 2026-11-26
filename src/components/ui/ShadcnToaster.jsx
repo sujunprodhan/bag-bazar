@@ -16,7 +16,6 @@ export default function ShadcnToaster({ toasts = [], onDismiss }) {
           key={t.id}
           className="pointer-events-auto bg-white border border-gray-200/90 rounded-xl shadow-[0_10px_30px_-5px_rgba(0,0,0,0.12)] p-4 flex items-start gap-3 animate-card-in"
         >
-          {/* Status Icon */}
           <div className="mt-0.5 shrink-0">
             {t.status === 'loading' && (
               <FiLoader className="text-orange-500 text-lg animate-spin" />
@@ -29,7 +28,6 @@ export default function ShadcnToaster({ toasts = [], onDismiss }) {
             )}
           </div>
 
-          {/* Content */}
           <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold text-gray-900 leading-tight">
               {t.title}
@@ -41,7 +39,6 @@ export default function ShadcnToaster({ toasts = [], onDismiss }) {
             )}
           </div>
 
-          {/* Optional Action Link */}
           {t.action?.href && (
             <Link
               href={t.action.href}
@@ -52,7 +49,6 @@ export default function ShadcnToaster({ toasts = [], onDismiss }) {
             </Link>
           )}
 
-          {/* Close Button */}
           <button
             type="button"
             onClick={() => onDismiss(t.id)}

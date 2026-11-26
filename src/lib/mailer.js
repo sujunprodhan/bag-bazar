@@ -1,8 +1,8 @@
 import nodemailer from 'nodemailer';
 
 function getTransporter() {
-  const user = process.env.SMTP_USER;
-  const pass = process.env.SMTP_PASS;
+  const user = process.env.SMTP_USER || process.env.EMAIL_USER;
+  const pass = process.env.SMTP_PASS || process.env.EMAIL_PASS;
   if (!user || !pass) {
     return null;
   }
@@ -52,7 +52,7 @@ export async function sendAddToCartEmail({ to, userName, product, color, size, q
 
   try {
     await transporter.sendMail({
-      from: process.env.SMTP_FROM || `"BagBazar" <${process.env.SMTP_USER}>`,
+      from: process.env.SMTP_FROM || `"BagBazar" <${process.env.SMTP_USER || process.env.EMAIL_USER}>`,
       to,
       subject,
       html,
@@ -136,7 +136,7 @@ export async function sendOrderInvoiceEmail(order) {
 
   try {
     await transporter.sendMail({
-      from: process.env.SMTP_FROM || `"BagBazar" <${process.env.SMTP_USER}>`,
+      from: process.env.SMTP_FROM || `"BagBazar" <${process.env.SMTP_USER || process.env.EMAIL_USER}>`,
       to,
       subject,
       html,

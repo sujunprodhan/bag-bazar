@@ -32,7 +32,6 @@ export async function getAuthSession() {
         };
       }
     } catch {
-      // Fallback to getServerSession below
     }
 
     if (!user) {
@@ -44,7 +43,6 @@ export async function getAuthSession() {
 
     if (!user) return null;
 
-    // Always sync latest role from MongoDB and ensure user still exists
     if (user.email) {
       try {
         const email = user.email.trim().toLowerCase();
@@ -60,7 +58,6 @@ export async function getAuthSession() {
         if (dbUser.name) user.name = dbUser.name;
         if (dbUser.image) user.image = dbUser.image;
       } catch {
-        // Ignore DB lookup error and keep token role
       }
     }
 

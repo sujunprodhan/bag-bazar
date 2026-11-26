@@ -39,7 +39,6 @@ const values = [
 const About = () => {
   return (
     <div className="bg-gray-50 min-h-screen">
-      {/* ── Hero Banner ── */}
       <section className="relative overflow-hidden bg-primary text-white py-16 sm:py-20">
         <div className="absolute -right-24 -top-24 w-80 h-80 rounded-full bg-accent/20 blur-3xl pointer-events-none" />
         <div className="absolute -left-24 -bottom-24 w-72 h-72 rounded-full bg-white/10 blur-3xl pointer-events-none" />
@@ -63,7 +62,6 @@ const About = () => {
         </Container>
       </section>
 
-      {/* ── Stats Bar ── */}
       <section className="py-10 bg-white border-b border-gray-100">
         <Container>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
@@ -90,7 +88,6 @@ const About = () => {
         </Container>
       </section>
 
-      {/* ── Brand Story ── */}
       <section className="py-14">
         <Container>
           <div className="bg-white rounded-3xl border border-gray-100 p-8 sm:p-12 shadow-xs grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
@@ -134,7 +131,6 @@ const About = () => {
         </Container>
       </section>
 
-      {/* ── Core Values ── */}
       <section className="pb-16">
         <Container>
           <div className="text-center max-w-xl mx-auto mb-10">

@@ -87,7 +87,6 @@ const LoginFrom = () => {
     <section className="min-h-[85vh] bg-gray-50 py-12 flex items-center">
       <Container>
         <div className="max-w-md mx-auto bg-white rounded-3xl border border-gray-100 shadow-lg p-7 sm:p-9 animate-card-in">
-          {/* Brand header */}
           <div className="text-center mb-7">
             <div className="w-12 h-12 rounded-2xl bg-primary text-accent flex items-center justify-center mx-auto mb-3 shadow-sm">
               <FiShoppingBag className="text-2xl" />
@@ -100,7 +99,6 @@ const LoginFrom = () => {
             </p>
           </div>
 
-          {/* Error Alert */}
           {displayError && (
             <div className="mb-5 flex flex-col gap-2 px-4 py-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-600 text-xs font-semibold">
               <div className="flex items-center gap-2.5">
@@ -118,9 +116,7 @@ const LoginFrom = () => {
             </div>
           )}
 
-          {/* Form */}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
-            {/* Email */}
             <div>
               <label className="block text-xs font-semibold text-gray-700 mb-1.5">
                 Email Address
@@ -149,7 +145,6 @@ const LoginFrom = () => {
               )}
             </div>
 
-            {/* Password */}
             <div>
               <label className="block text-xs font-semibold text-gray-700 mb-1.5">
                 Password
@@ -188,7 +183,6 @@ const LoginFrom = () => {
               )}
             </div>
 
-            {/* Submit */}
             <button
               type="submit"
               disabled={isSubmitting || googleLoading}
@@ -208,7 +202,6 @@ const LoginFrom = () => {
             </button>
           </form>
 
-          {/* Divider */}
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-200" />
@@ -218,7 +211,6 @@ const LoginFrom = () => {
             </div>
           </div>
 
-          {/* Google Login */}
           <button
             type="button"
             onClick={handleGoogleLogin}
@@ -233,7 +225,6 @@ const LoginFrom = () => {
             <span>Continue with Google</span>
           </button>
 
-          {/* Footer link */}
           <p className="text-center text-xs text-gray-500 mt-6">
             Don&apos;t have an account?{' '}
             <Link href="/register" className="text-accent font-bold hover:underline">

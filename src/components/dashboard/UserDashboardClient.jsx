@@ -73,7 +73,6 @@ export default function UserDashboardClient({ user, initialData }) {
   return (
     <div className="bg-gray-50 min-h-screen py-10">
       <Container>
-        {/* Header */}
         <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <p className="text-accent text-xs font-bold tracking-widest uppercase mb-1">
@@ -94,7 +93,6 @@ export default function UserDashboardClient({ user, initialData }) {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Sidebar */}
           <aside className="lg:col-span-3 space-y-4">
             <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-xs space-y-4">
               <div className="flex items-center gap-3 pb-4 border-b border-gray-100">
@@ -169,7 +167,6 @@ export default function UserDashboardClient({ user, initialData }) {
             </div>
           </aside>
 
-          {/* Main Content */}
           <main className="lg:col-span-9 space-y-6">
             {activeTab === 'overview' && (
               <>
@@ -205,7 +202,6 @@ export default function UserDashboardClient({ user, initialData }) {
                   </div>
                 </div>
 
-                {/* Set Password Card for Google-registered users */}
                 {!hasPassword && (
                   <div className="bg-white rounded-2xl border border-orange-200 p-6 shadow-xs space-y-4">
                     <div className="flex items-start gap-3">
@@ -280,7 +276,6 @@ export default function UserDashboardClient({ user, initialData }) {
                   </div>
                 )}
 
-                {/* Recent Orders Preview */}
                 <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-xs">
                   <div className="flex items-center justify-between mb-4">
                     <h2 className="font-heading font-bold text-lg text-primary">

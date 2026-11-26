@@ -3,14 +3,12 @@ import React from 'react';
 export function ProductCardSkeleton() {
   return (
     <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden flex flex-col animate-pulse">
-      {/* Image placeholder */}
       <div className="w-full h-52 bg-gray-200/80 relative">
         <div className="absolute top-3 left-3 w-12 h-5 rounded-lg bg-gray-300/70" />
         <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-gray-300/70" />
         <div className="absolute bottom-3 left-3 w-16 h-4 rounded-full bg-gray-300/70" />
       </div>
 
-      {/* Info placeholder */}
       <div className="p-4 flex flex-col flex-1 gap-3">
         <div className="w-16 h-3 rounded bg-orange-100" />
         <div className="space-y-1.5">
@@ -18,14 +16,12 @@ export function ProductCardSkeleton() {
           <div className="w-3/5 h-4 rounded bg-gray-200" />
         </div>
 
-        {/* Color dots */}
         <div className="flex items-center gap-1.5">
           <div className="w-4 h-4 rounded-full bg-gray-200" />
           <div className="w-4 h-4 rounded-full bg-gray-200" />
           <div className="w-4 h-4 rounded-full bg-gray-200" />
         </div>
 
-        {/* Price & Size */}
         <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
           <div className="flex items-center gap-2">
             <div className="w-16 h-5 rounded bg-gray-200" />
@@ -34,7 +30,6 @@ export function ProductCardSkeleton() {
           <div className="w-10 h-5 rounded bg-gray-200" />
         </div>
 
-        {/* Buttons */}
         <div className="grid grid-cols-2 gap-2">
           <div className="h-9 rounded-xl bg-gray-100" />
           <div className="h-9 rounded-xl bg-orange-200/70" />
@@ -78,7 +73,6 @@ export function ProductGridSkeleton() {
         </div>
 
         <div className="flex gap-6">
-          {/* Sidebar skeleton */}
           <div className="hidden lg:block w-60 shrink-0 bg-white rounded-2xl border border-gray-100 p-4 space-y-3 h-fit animate-pulse">
             <div className="w-28 h-5 rounded bg-gray-200 mb-4" />
             {Array.from({ length: 8 }).map((_, i) => (
@@ -86,7 +80,6 @@ export function ProductGridSkeleton() {
             ))}
           </div>
 
-          {/* Grid skeleton */}
           <div className="flex-1 min-w-0">
             <div className="flex justify-between gap-3 mb-5 animate-pulse">
               <div className="w-64 h-10 rounded-xl bg-white border border-gray-100" />
