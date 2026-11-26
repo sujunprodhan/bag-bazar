@@ -1,15 +1,44 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { FiShoppingBag, FiSearch, FiMenu, FiX, FiShoppingCart } from 'react-icons/fi';
+import { useSession, signOut } from 'next-auth/react';
+import {
+  FiShoppingBag,
+  FiSearch,
+  FiMenu,
+  FiX,
+  FiShoppingCart,
+  FiHeart,
+  FiLogOut,
+  FiUser,
+  FiChevronDown,
+  FiGrid,
+  FiShield,
+} from 'react-icons/fi';
 import NavLinks from '@/buttons/NavLink';
 import Container from './Container';
+import { useShop } from '@/context/ShopContext';
 
 const Navbar = () => {
   const router = useRouter();
+  const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [imgError, setImgError] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const { cartCount, favoritesCount } = useShop();
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    const handleOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setUserMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleOutside);
+    return () => document.removeEventListener('mousedown', handleOutside);
+  }, []);
 
   const navLinks = [
     { name: 'Home', href: '/' },
@@ -60,32 +89,152 @@ const Navbar = () => {
             </form>
 
             <Link
+              href="/favorites"
+              className="relative p-2.5 rounded-full text-primary hover:text-accent hover:bg-light-section transition-colors"
+              aria-label="Favorites"
+            >
+              <FiHeart className="text-xl" />
+              {favoritesCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 bg-rose-500 text-white text-[11px] font-bold rounded-full h-5 min-w-5 px-1 flex items-center justify-center shadow-xs">
+                  {favoritesCount}
+                </span>
+              )}
+            </Link>
+
+            <Link
               href="/cart"
               className="relative p-2.5 rounded-full text-primary hover:text-accent hover:bg-light-section transition-colors"
               aria-label="Shopping Cart"
             >
               <FiShoppingCart className="text-xl" />
               <span className="absolute -top-0.5 -right-0.5 bg-accent text-white text-[11px] font-bold rounded-full h-5 min-w-5 px-1 flex items-center justify-center shadow-xs">
-                0
+                {cartCount}
               </span>
             </Link>
 
-            <Link
-              href="/login"
-              className="text-primary hover:text-accent hover:bg-light-section px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
-            >
-              Log in
-            </Link>
+            {session?.user ? (
+              <div className="relative pl-1" ref={menuRef}>
+                <button
+                  type="button"
+                  onClick={() => setUserMenuOpen((prev) => !prev)}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-light-section border border-primary/10 hover:border-accent transition cursor-pointer"
+                >
+                  {session.user.image && !imgError ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={session.user.image}
+                      alt={session.user.name || 'User'}
+                      referrerPolicy="no-referrer"
+                      onError={() => setImgError(true)}
+                      className="w-7 h-7 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-7 h-7 rounded-full bg-primary text-accent flex items-center justify-center text-xs font-bold">
+                      {(session.user.name || session.user.email || 'U').charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                  <span className="text-xs font-bold text-primary max-w-28 truncate">
+                    {session.user.name || session.user.email}
+                  </span>
+                  <FiChevronDown
+                    className={`text-xs text-muted transition-transform ${
+                      userMenuOpen ? 'rotate-180' : ''
+                    }`}
+                  />
+                </button>
 
-            <Link
-              href="/register"
-              className="bg-accent hover:opacity-90 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-xs hover:shadow transition-all"
-            >
-              Register
-            </Link>
+                {userMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-60 bg-white rounded-2xl border border-gray-100 shadow-xl py-2 z-50 animate-card-in">
+                    <div className="px-4 py-2.5 border-b border-gray-100">
+                      <p className="font-bold text-sm text-primary truncate">
+                        {session.user.name || 'User'}
+                      </p>
+                      <p className="text-xs text-muted truncate">{session.user.email}</p>
+                      <span className="inline-block mt-1 px-2 py-0.5 rounded-full bg-orange-50 text-accent text-[10px] font-bold uppercase">
+                        {session.user.role || 'user'}
+                      </span>
+                    </div>
+
+                    <div className="py-1">
+                      <Link
+                        href="/dashboard?view=user"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-accent transition"
+                      >
+                        <FiGrid className="text-base" />
+                        <span>User Dashboard</span>
+                      </Link>
+
+                      {session.user.role === 'admin' && (
+                        <Link
+                          href="/dashboard?view=admin"
+                          onClick={() => setUserMenuOpen(false)}
+                          className="flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium text-primary hover:bg-orange-50 hover:text-accent transition"
+                        >
+                          <FiShield className="text-base text-accent" />
+                          <span>Admin Dashboard</span>
+                        </Link>
+                      )}
+
+                      <Link
+                        href="/favorites"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-accent transition"
+                      >
+                        <FiHeart className="text-base" />
+                        <span>My Wishlist</span>
+                      </Link>
+                    </div>
+
+                    <div className="pt-1 border-t border-gray-100">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setUserMenuOpen(false);
+                          signOut({ callbackUrl: '/' });
+                        }}
+                        className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm font-semibold text-rose-600 hover:bg-rose-50 transition cursor-pointer"
+                      >
+                        <FiLogOut className="text-base" />
+                        <span>Log out</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="text-primary hover:text-accent hover:bg-light-section px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
+                >
+                  Log in
+                </Link>
+
+                <Link
+                  href="/register"
+                  className="bg-accent hover:opacity-90 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-xs hover:shadow transition-all"
+                >
+                  Register
+                </Link>
+              </>
+            )}
           </div>
 
           <div className="flex md:hidden items-center gap-2">
+            <Link
+              href="/favorites"
+              className="relative p-2 rounded-lg text-primary hover:text-accent hover:bg-light-section"
+              aria-label="Favorites"
+            >
+              <FiHeart className="text-xl" />
+              {favoritesCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 bg-rose-500 text-white text-[10px] font-bold rounded-full h-4 min-w-4 px-1 flex items-center justify-center">
+                  {favoritesCount}
+                </span>
+              )}
+            </Link>
+
             <Link
               href="/cart"
               className="relative p-2 rounded-lg text-primary hover:text-accent hover:bg-light-section"
@@ -93,7 +242,7 @@ const Navbar = () => {
             >
               <FiShoppingCart className="text-xl" />
               <span className="absolute -top-0.5 -right-0.5 bg-accent text-white text-[10px] font-bold rounded-full h-4 min-w-4 px-1 flex items-center justify-center">
-                0
+                {cartCount}
               </span>
             </Link>
 
@@ -131,20 +280,67 @@ const Navbar = () => {
             </div>
 
             <div className="pt-3 border-t border-light-section flex flex-col gap-2 px-2">
-              <Link
-                href="/login"
-                onClick={() => setIsOpen(false)}
-                className="w-full text-center py-2.5 border border-primary/20 text-primary hover:text-accent rounded-lg text-sm font-semibold transition-colors"
-              >
-                Log in
-              </Link>
-              <Link
-                href="/register"
-                onClick={() => setIsOpen(false)}
-                className="w-full text-center py-2.5 bg-accent hover:opacity-90 text-white rounded-lg text-sm font-semibold shadow-xs transition-colors"
-              >
-                Register
-              </Link>
+              {session?.user ? (
+                <>
+                  <div className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-light-section">
+                    <FiUser className="text-primary text-sm shrink-0" />
+                    <div className="min-w-0">
+                      <p className="text-xs font-bold text-primary truncate">
+                        {session.user.name || session.user.email}
+                      </p>
+                      <p className="text-[10px] text-accent font-bold uppercase">
+                        {session.user.role || 'user'}
+                      </p>
+                    </div>
+                  </div>
+                  <Link
+                    href="/dashboard?view=user"
+                    onClick={() => setIsOpen(false)}
+                    className="w-full flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200 text-xs font-semibold text-primary hover:border-accent"
+                  >
+                    <FiGrid />
+                    <span>User Dashboard</span>
+                  </Link>
+                  {session.user.role === 'admin' && (
+                    <Link
+                      href="/dashboard?view=admin"
+                      onClick={() => setIsOpen(false)}
+                      className="w-full flex items-center gap-2 px-3 py-2 rounded-lg border border-orange-200 bg-orange-50 text-xs font-semibold text-accent"
+                    >
+                      <FiShield />
+                      <span>Admin Dashboard</span>
+                    </Link>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsOpen(false);
+                      signOut({ callbackUrl: '/' });
+                    }}
+                    className="w-full flex items-center justify-center gap-2 py-2.5 border border-rose-200 text-rose-600 rounded-lg text-sm font-semibold transition-colors cursor-pointer"
+                  >
+                    <FiLogOut />
+                    <span>Log out</span>
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    onClick={() => setIsOpen(false)}
+                    className="w-full text-center py-2.5 border border-primary/20 text-primary hover:text-accent rounded-lg text-sm font-semibold transition-colors"
+                  >
+                    Log in
+                  </Link>
+                  <Link
+                    href="/register"
+                    onClick={() => setIsOpen(false)}
+                    className="w-full text-center py-2.5 bg-accent hover:opacity-90 text-white rounded-lg text-sm font-semibold shadow-xs transition-colors"
+                  >
+                    Register
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         )}

@@ -1,4 +1,6 @@
+import { Suspense } from 'react';
 import Product from '@/components/Product';
+import { ProductGridSkeleton } from '@/components/skeletons/ProductSkeleton';
 
 export const metadata = {
   title: 'Products | BagBazar',
@@ -6,5 +8,9 @@ export const metadata = {
 };
 
 export default function ProductPage() {
-  return <Product />;
+  return (
+    <Suspense fallback={<ProductGridSkeleton />}>
+      <Product />
+    </Suspense>
+  );
 }

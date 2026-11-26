@@ -5,6 +5,11 @@ const dbName = process.env.DB_NAME;
 
 export const collections = {
   PRODUCT: 'product',
+  CART: 'cart',
+  FAVORITE: 'favorite',
+  ORDER: 'order',
+  USER: 'user',
+  CHAT: 'chat',
 };
 
 const client = new MongoClient(uri, {

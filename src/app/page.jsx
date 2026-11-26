@@ -1,11 +1,17 @@
+import { Suspense } from 'react';
 import Hero from '@/components/Hero';
-import Product from '@/components/Product';
+import HomeProducts from '@/components/HomeProducts';
+import HomeExtras from '@/components/HomeExtras';
+import { HomeProductsSkeleton } from '@/components/skeletons/ProductSkeleton';
 
 export default function Home() {
   return (
     <div className="flex flex-col flex-1">
       <Hero />
-      <Product></Product>
+      <Suspense fallback={<HomeProductsSkeleton />}>
+        <HomeProducts />
+      </Suspense>
+      <HomeExtras />
     </div>
   );
 }

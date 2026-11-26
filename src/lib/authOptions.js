@@ -1,0 +1,150 @@
+import CredentialsProvider from 'next-auth/providers/credentials';
+import { collections, dbConnect } from '@/lib/dbConnect';
+import GoogleProvider from 'next-auth/providers/google';
+import bcrypt from 'bcryptjs';
+
+export const authOptions = {
+  providers: [
+    CredentialsProvider({
+      name: 'Credentials',
+
+      credentials: {
+        email: {
+          label: 'Email',
+          type: 'email',
+        },
+        password: {
+          label: 'Password',
+          type: 'password',
+        },
+      },
+
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          return null;
+        }
+
+        const email = credentials.email.trim().toLowerCase();
+        const escaped = email.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+        const matchedUsers = await dbConnect(collections.USER)
+          .find({ email: { $regex: new RegExp(`^${escaped}$`, 'i') } })
+          .toArray();
+
+        if (!matchedUsers.length) {
+          return null;
+        }
+
+        const user = matchedUsers.find((u) => Boolean(u.password)) || matchedUsers[0];
+
+        if (!user.password) {
+          throw new Error('GOOGLE_NO_PASSWORD');
+        }
+
+        const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
+
+        if (!isPasswordValid) {
+          return null;
+        }
+
+        return {
+          id: user._id.toString(),
+          name: user.name,
+          email: user.email,
+          role: user.role || 'user',
+        };
+      },
+    }),
+
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    }),
+  ],
+
+  session: {
+    strategy: 'jwt',
+  },
+
+  pages: {
+    signIn: '/login',
+    error: '/login',
+  },
+
+  callbacks: {
+    async signIn({ user, account }) {
+      if (account?.provider === 'google') {
+        try {
+          const email = user.email?.trim().toLowerCase();
+          const { name, image } = user;
+          const userCollection = dbConnect(collections.USER);
+          const isExist = await userCollection.findOne({ email });
+          if (!isExist) {
+            const newUser = {
+              name,
+              email,
+              image,
+              provider: 'google',
+              role: 'user',
+              createdAt: new Date(),
+            };
+            const res = await userCollection.insertOne(newUser);
+            user.id = res.insertedId.toString();
+          } else {
+            user.id = isExist._id.toString();
+            user.role = isExist.role || 'user';
+          }
+        } catch (error) {
+          console.error('Error in Google signIn callback:', error);
+        }
+      }
+      return true;
+    },
+
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.role = user.role || 'user';
+        if (user.image) {
+          token.image = user.image;
+        }
+      } else if (token?.email) {
+        try {
+          const email = token.email.trim().toLowerCase();
+          const escaped = email.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          const dbUser = await dbConnect(collections.USER).findOne({
+            email: { $regex: new RegExp(`^${escaped}$`, 'i') },
+          });
+          if (!dbUser) {
+            token.deleted = true;
+          } else {
+            token.deleted = false;
+            if (dbUser.role) {
+              token.role = dbUser.role;
+            }
+          }
+        } catch {
+          // ignore DB error
+        }
+      }
+      return token;
+    },
+
+    async session({ session, token }) {
+      if (!token || token.deleted) {
+        return null;
+      }
+      if (session.user) {
+        session.user.id = token.id;
+        session.user.role = token.role;
+        if (token.image || token.picture) {
+          session.user.image = token.image || token.picture;
+        }
+      }
+      return session;
+    },
+  },
+  secret: process.env.NEXTAUTH_SECRET || 'bagbazar-dev-secret-key-2026',
+};
+
+export default authOptions;

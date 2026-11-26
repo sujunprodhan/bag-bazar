@@ -1,7 +1,12 @@
+import { Suspense } from 'react';
 import { Inter, Poppins, Hind_Siliguri, Noto_Sans_Bengali } from 'next/font/google';
 import './globals.css';
 import Navbar from '@/layout/Navbar';
 import Footer from '@/layout/Footer';
+import { ShopProvider } from '@/context/ShopContext';
+import AuthProvider from '@/provider/AuthProvider';
+import RouteProgressBar from '@/components/RouteProgressBar';
+import LiveChatWidget from '@/components/LiveChatWidget';
 
 const inter = Inter({
   variable: '--font-inter',
@@ -42,11 +47,19 @@ export default function RootLayout({ children }) {
       className={`${inter.variable} ${poppins.variable} ${hindSiliguri.variable} ${notoSansBengali.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <header>
-          <Navbar />
-        </header>
-        <main className="flex-1 min-h-[calc(100vh-318px)]">{children}</main>
-        <Footer />
+        <AuthProvider>
+          <ShopProvider>
+            <Suspense fallback={null}>
+              <RouteProgressBar />
+            </Suspense>
+            <header>
+              <Navbar />
+            </header>
+            <main className="flex-1 min-h-[calc(100vh-318px)]">{children}</main>
+            <Footer />
+            <LiveChatWidget />
+          </ShopProvider>
+        </AuthProvider>
       </body>
     </html>
   );
