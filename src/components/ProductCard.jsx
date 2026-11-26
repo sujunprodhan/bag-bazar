@@ -15,7 +15,7 @@ const colorHexMap = {
 
 const ProductCard = ({ product, index = 0 }) => {
   const { addToCart, toggleFavorite, isFavorite } = useShop();
-  const [imgLoaded, setImgLoaded] = useState(false);
+  const [imgError, setImgError] = useState(false);
   const [adding, setAdding] = useState(false);
   const wished = isFavorite(product._id);
   const mainImage = product.images?.[0] || null;
@@ -40,22 +40,16 @@ const ProductCard = ({ product, index = 0 }) => {
       style={{ animationDelay: `${(index % 9) * 55}ms` }}
       className="animate-card-in bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col group"
     >
-      <div className="relative w-full h-64 sm:h-72 bg-white overflow-hidden">
-        {mainImage ? (
-          <>
-            {!imgLoaded && (
-              <div className="absolute inset-0 bg-gray-100 animate-pulse" />
-            )}
-            <img
-              src={mainImage}
-              alt={product.name || 'Product'}
-              onLoad={() => setImgLoaded(true)}
-              onError={() => setImgLoaded(true)}
-              className={`absolute inset-0 w-full h-full object-cover brightness-[1.03] group-hover:scale-105 transition-all duration-500 ${
-                imgLoaded ? 'opacity-100' : 'opacity-0'
-              }`}
-            />
-          </>
+      <div className="relative w-full h-64 sm:h-72 bg-gray-100 overflow-hidden">
+        {mainImage && !imgError ? (
+          <img
+            src={mainImage}
+            alt={product.name || 'Product'}
+            loading="lazy"
+            referrerPolicy="no-referrer"
+            onError={() => setImgError(true)}
+            className="absolute inset-0 w-full h-full object-cover brightness-[1.03] group-hover:scale-105 transition-transform duration-500"
+          />
         ) : (
           <div className="absolute inset-0 flex flex-col items-center justify-center w-full h-full text-gray-300 bg-gray-50">
             <FiShoppingCart className="text-5xl mb-2" />
