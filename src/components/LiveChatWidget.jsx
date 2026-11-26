@@ -6,7 +6,7 @@ import { FiHeadphones, FiX, FiSend, FiLoader, FiLock } from 'react-icons/fi';
 import { FaWhatsapp } from 'react-icons/fa';
 import { getUserChatMessagesAction, sendChatMessageAction } from '@/actions/server/chat';
 
-const RAW_WHATSAPP = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '8801746017448';
+const RAW_WHATSAPP = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '880 1608-054610';
 const WHATSAPP_NUMBER = RAW_WHATSAPP.replace(/\D/g, '');
 const WHATSAPP_TEXT = encodeURIComponent('Hello BagBazar! I need help with a product.');
 
