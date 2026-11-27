@@ -54,7 +54,7 @@ const LOGO_CONFIG = {
     ),
   },
   cod: {
-    name: 'COD',
+    name: 'Cash on Delivery',
     bg: 'bg-emerald-600',
     text: 'text-white',
     ring: 'border-emerald-400/30',
