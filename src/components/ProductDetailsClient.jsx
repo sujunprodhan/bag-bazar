@@ -45,7 +45,7 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }) 
 
   return (
     <div className="bg-gray-50 min-h-screen py-10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[2520px] mx-auto xl:px-20 md:px-10 sm:px-2 px-4">
 
         <Link
           href="/product"

@@ -126,7 +126,7 @@ const ProductFilterClient = ({ initialProducts = [] }) => {
         <div className="absolute inset-0 bg-gradient-to-r from-[#0B2135]/95 via-[#0F2A43]/85 to-[#0F2A43]/70 pointer-events-none" />
         <div className="absolute -right-24 -top-24 w-80 h-80 rounded-full bg-accent/25 blur-3xl pointer-events-none" />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="max-w-[2520px] mx-auto xl:px-20 md:px-10 sm:px-2 px-4 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             <div className="lg:col-span-7 space-y-4">
               <div className="flex items-center gap-2 text-xs font-semibold text-white/70">
@@ -212,7 +212,7 @@ const ProductFilterClient = ({ initialProducts = [] }) => {
         </div>
       </section>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div className="max-w-[2520px] mx-auto xl:px-20 md:px-10 sm:px-2 px-4 py-10">
 
         <div className="flex gap-6">
 

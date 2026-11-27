@@ -1,4 +1,5 @@
 import React from 'react';
+import Container from '@/layout/Container';
 
 export function ProductCardSkeleton() {
   return (
@@ -42,7 +43,7 @@ export function ProductCardSkeleton() {
 export function HomeProductsSkeleton() {
   return (
     <section className="bg-gray-50 py-14">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <Container>
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10 animate-pulse">
           <div className="space-y-2">
             <div className="w-24 h-3 rounded bg-orange-100" />
@@ -57,7 +58,7 @@ export function HomeProductsSkeleton() {
             <ProductCardSkeleton key={idx} />
           ))}
         </div>
-      </div>
+      </Container>
     </section>
   );
 }

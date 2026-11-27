@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { FiArrowRight, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import Container from '@/layout/Container';
 import ProductCard from './ProductCard';
 
 const PRODUCTS_PER_PAGE = 9;
@@ -22,7 +23,7 @@ const HomeCategorySection = ({ products = [] }) => {
 
   return (
     <section className="bg-gray-50 py-14">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <Container>
 
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
           <div>
@@ -107,7 +108,7 @@ const HomeCategorySection = ({ products = [] }) => {
           </div>
         )}
 
-      </div>
+      </Container>
     </section>
   );
 };

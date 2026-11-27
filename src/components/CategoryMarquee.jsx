@@ -1,6 +1,7 @@
 'use client';
 import React, { useMemo } from 'react';
 import Link from 'next/link';
+import Container from '@/layout/Container';
 import {
   FiShoppingBag, FiPackage, FiGrid, FiBook,
   FiAnchor, FiDroplet, FiUser, FiStar,
@@ -104,10 +105,12 @@ const CategoryMarquee = ({ products = [] }) => {
 
   return (
     <section className="bg-white py-12 border-t border-gray-100 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-7">
-        <p className="text-orange-500 text-xs font-bold tracking-widest uppercase mb-1">Browse</p>
-        <h2 className="font-extrabold text-2xl sm:text-3xl text-gray-900">Shop By Category</h2>
-      </div>
+      <Container>
+        <div className="mb-7">
+          <p className="text-orange-500 text-xs font-bold tracking-widest uppercase mb-1">Browse</p>
+          <h2 className="font-extrabold text-2xl sm:text-3xl text-gray-900">Shop By Category</h2>
+        </div>
+      </Container>
 
       <div className="relative overflow-hidden">
         <div className="pointer-events-none absolute left-0 top-0 h-full w-20 bg-linear-to-r from-white to-transparent z-10" />
