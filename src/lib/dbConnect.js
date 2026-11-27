@@ -1,5 +1,8 @@
 import { MongoClient, ServerApiVersion } from 'mongodb';
 
+const uri = process.env.MONGODB_URI;
+const dbName = process.env.DB_NAME;
+
 export const collections = {
   PRODUCT: 'product',
   CART: 'cart',
@@ -9,26 +12,15 @@ export const collections = {
   CHAT: 'chat',
 };
 
-let client;
-
-function getClient() {
-  if (!client) {
-    const uri = process.env.MONGODB_URI;
-    if (!uri) {
-      throw new Error('MONGODB_URI environment variable is not set');
-    }
-    client = new MongoClient(uri, {
-      serverApi: {
-        version: ServerApiVersion.v1,
-        strict: true,
-        deprecationErrors: true,
-      },
-    });
-  }
-  return client;
-}
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  },
+});
 
 export const dbConnect = (cname) => {
-  const dbName = process.env.DB_NAME || 'bagbzar';
-  return getClient().db(dbName).collection(cname);
+  return client.db(dbName).collection(cname);
 };
+
