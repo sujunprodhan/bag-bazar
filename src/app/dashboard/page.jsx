@@ -7,6 +7,8 @@ import {
 import AdminDashboardClient from '@/components/dashboard/AdminDashboardClient';
 import UserDashboardClient from '@/components/dashboard/UserDashboardClient';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
   title: 'Dashboard | BagBazar',
   description: 'Manage your BagBazar orders, wishlist, and store.',
