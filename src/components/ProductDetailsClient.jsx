@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { FiShoppingCart, FiArrowLeft, FiCheck, FiHeart, FiMinus, FiPlus, FiLoader } from 'react-icons/fi';
+import { FiShoppingCart, FiArrowLeft, FiCheck, FiCheckCircle, FiHeart, FiMinus, FiPlus, FiLoader } from 'react-icons/fi';
 import ProductCard from './ProductCard';
 import { useShop } from '@/context/ShopContext';
 
@@ -15,7 +15,18 @@ const colorHexMap = {
   tan: '#D2B48C', gold: '#D4AF37', silver: '#C0C0C0', cream: '#FFFDD0',
 };
 
+const defaultHighlights = [
+  { title: 'Spacious', subtitle: 'প্রচুর জায়গা' },
+  { title: 'Durable', subtitle: 'টেকসই ফ্যাব্রিক' },
+  { title: 'Easy Carry', subtitle: 'মজবুত হ্যান্ডেল' },
+  { title: 'Smart Zips', subtitle: 'সহজে খোলা-বন্ধ' },
+];
+
 export default function ProductDetailsClient({ product, relatedProducts = [] }) {
+  const highlights =
+    Array.isArray(product.highlights) && product.highlights.length > 0
+      ? product.highlights
+      : defaultHighlights;
   const router = useRouter();
   const { addToCart, toggleFavorite, isFavorite } = useShop();
   const images = product.images?.length ? product.images : [];
@@ -43,7 +54,7 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }) 
           <FiArrowLeft /> Back to Products
         </Link>
 
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 md:p-10 grid grid-cols-1 md:grid-cols-2 gap-10 mb-14">
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-start mb-6">
 
           <div className="flex flex-col gap-3">
             <div className="relative w-full h-96 md:h-[480px] rounded-2xl overflow-hidden bg-gray-50 border border-gray-100">
@@ -135,9 +146,24 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }) 
               )}
             </div>
 
-            <p className="text-gray-500 text-sm leading-relaxed border-t border-gray-100 pt-4">
+            <p className="text-gray-600 text-sm leading-relaxed border-t border-gray-100 pt-4">
               {product.shortDescription || product.description || 'No description available.'}
             </p>
+
+            {(product.material || product.sku) && (
+              <div className="flex flex-wrap gap-3 text-xs text-gray-500">
+                {product.material && (
+                  <span className="px-3 py-1 rounded-lg bg-gray-100">
+                    Material: <strong className="text-gray-800">{product.material}</strong>
+                  </span>
+                )}
+                {product.sku && (
+                  <span className="px-3 py-1 rounded-lg bg-gray-100">
+                    SKU: <strong className="text-gray-800">{product.sku}</strong>
+                  </span>
+                )}
+              </div>
+            )}
 
             {Array.isArray(product.colors) && product.colors.length > 0 && (
               <div className="space-y-2">
@@ -276,7 +302,80 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }) 
               </button>
             </div>
           </div>
+
+          <div className="md:col-span-2 border-t border-gray-100 pt-6 mt-2 grid grid-cols-2 md:grid-cols-4 gap-6">
+            {highlights.map((item, idx) => (
+              <div key={`${item.title}-${idx}`} className="space-y-1">
+                <p className="font-heading font-bold text-base sm:text-lg text-accent">
+                  {item.title}
+                </p>
+                <p className="text-xs sm:text-sm text-gray-600 font-bangla">
+                  {item.subtitle}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
+
+        {( (Array.isArray(product.keyFeatures) && product.keyFeatures.length > 0) || product.description || product.shortDescription ) && (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-12">
+            {Array.isArray(product.keyFeatures) &&
+              product.keyFeatures.filter((f) => f && f.toLowerCase() !== 'key features').length > 0 && (
+                <div
+                  className={`${
+                    product.description || product.shortDescription
+                      ? 'lg:col-span-6'
+                      : 'lg:col-span-12'
+                  } bg-white rounded-2xl border border-gray-100 shadow-sm p-6 md:p-7 space-y-4`}
+                >
+                  <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+                    <h2 className="font-heading font-bold text-lg text-primary">
+                      Key Features
+                    </h2>
+                    <span className="px-2.5 py-0.5 rounded-full bg-orange-50 text-accent text-xs font-semibold">
+                      Highlights
+                    </span>
+                  </div>
+                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    {product.keyFeatures
+                      .filter((f) => f && f.toLowerCase() !== 'key features')
+                      .map((feature, idx) => (
+                        <li
+                          key={idx}
+                          className="flex items-start gap-2 p-2.5 rounded-xl bg-gray-50 border border-gray-100 text-xs sm:text-sm text-gray-700"
+                        >
+                          <FiCheckCircle className="text-orange-500 text-sm shrink-0 mt-0.5" />
+                          <span className="leading-snug">{feature}</span>
+                        </li>
+                      ))}
+                  </ul>
+                </div>
+              )}
+
+            {(product.description || product.shortDescription) && (
+              <div
+                className={`${
+                  Array.isArray(product.keyFeatures) &&
+                  product.keyFeatures.filter((f) => f && f.toLowerCase() !== 'key features').length > 0
+                    ? 'lg:col-span-6'
+                    : 'lg:col-span-12'
+                } bg-white rounded-2xl border border-gray-100 shadow-sm p-6 md:p-7 space-y-4`}
+              >
+                <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+                  <h2 className="font-heading font-bold text-lg text-primary">
+                    Product Description
+                  </h2>
+                  <span className="px-2.5 py-0.5 rounded-full bg-gray-100 text-gray-600 text-xs font-semibold">
+                    Details
+                  </span>
+                </div>
+                <div className="text-gray-700 text-sm sm:text-base leading-relaxed whitespace-pre-line font-bangla">
+                  {product.description || product.shortDescription}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {relatedProducts.length > 0 && (
           <div>

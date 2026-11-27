@@ -45,9 +45,9 @@ export default function RouteProgressBar() {
   if (!navigating) return null;
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-[100] pointer-events-none">
+    <div className="fixed top-0 left-0 right-0 z-100 pointer-events-none">
       <div className="h-1 w-full bg-orange-100 overflow-hidden">
-        <div className="h-full bg-gradient-to-r from-orange-400 via-orange-500 to-amber-500 animate-route-progress" />
+        <div className="h-full bg-linear-to-r from-orange-400 via-orange-500 to-amber-500 animate-route-progress" />
       </div>
     </div>
   );

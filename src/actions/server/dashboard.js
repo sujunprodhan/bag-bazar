@@ -176,6 +176,25 @@ function normalizeProductFields(data) {
         .map((s) => s.trim())
         .filter(Boolean);
 
+  const keyFeatures = Array.isArray(data.keyFeatures)
+    ? data.keyFeatures.filter(Boolean)
+    : (data.keyFeaturesText || '')
+        .split(/\r?\n|,/)
+        .map((f) => f.trim())
+        .filter(Boolean);
+
+  const highlights = Array.isArray(data.highlights)
+    ? data.highlights.filter((h) => h?.title)
+    : (data.highlightsText || '')
+        .split(/\r?\n/)
+        .map((line) => {
+          const [title, ...rest] = line.split('|');
+          const cleanTitle = title?.trim();
+          const cleanSubtitle = rest.join('|').trim();
+          return cleanTitle ? { title: cleanTitle, subtitle: cleanSubtitle } : null;
+        })
+        .filter(Boolean);
+
   return {
     name,
     slug,
@@ -185,6 +204,8 @@ function normalizeProductFields(data) {
     images,
     colors: colors.length ? colors : ['Black'],
     sizes: sizes.length ? sizes : ['Standard'],
+    keyFeatures,
+    highlights,
     material: data.material?.trim() || '',
     sku: data.sku?.trim() || '',
     shortDescription: data.shortDescription?.trim() || data.description?.trim() || '',

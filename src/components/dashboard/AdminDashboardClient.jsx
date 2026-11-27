@@ -70,6 +70,8 @@ const emptyProductForm = {
   sku: '',
   shortDescription: '',
   description: '',
+  keyFeaturesText: '',
+  highlightsText: 'Spacious | প্রচুর জায়গা\nDurable | টেকসই ফ্যাব্রিক\nEasy Carry | মজবুত হ্যান্ডেল\nSmart Zips | সহজে খোলা-বন্ধ',
   inStock: true,
   isNewArrival: true,
 };
@@ -191,6 +193,13 @@ export default function AdminDashboardClient({ user, initialData }) {
       sku: product.sku || '',
       shortDescription: product.shortDescription || '',
       description: product.description || '',
+      keyFeaturesText: Array.isArray(product.keyFeatures)
+        ? product.keyFeatures.join('\n')
+        : '',
+      highlightsText:
+        Array.isArray(product.highlights) && product.highlights.length > 0
+          ? product.highlights.map((h) => `${h.title} | ${h.subtitle || ''}`).join('\n')
+          : 'Spacious | প্রচুর জায়গা\nDurable | টেকসই ফ্যাব্রিক\nEasy Carry | মজবুত হ্যান্ডেল\nSmart Zips | সহজে খোলা-বন্ধ',
       inStock: product.inStock !== undefined ? Boolean(product.inStock) : true,
       isNewArrival: Boolean(product.isNewArrival),
     });
@@ -732,11 +741,41 @@ export default function AdminDashboardClient({ user, initialData }) {
 
                       <div className="sm:col-span-2">
                         <label className="block text-[11px] font-semibold text-gray-600 mb-1">
-                          Full Description
+                          Key Features (one per line or comma separated)
                         </label>
                         <textarea
                           rows={3}
-                          placeholder="Detailed product description..."
+                          placeholder={"Water-resistant fabric\nPadded 15.6-inch laptop compartment\nUSB charging port"}
+                          value={productForm.keyFeaturesText}
+                          onChange={(e) =>
+                            setProductForm({ ...productForm, keyFeaturesText: e.target.value })
+                          }
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 bg-white text-sm"
+                        />
+                      </div>
+
+                      <div className="sm:col-span-2">
+                        <label className="block text-[11px] font-semibold text-gray-600 mb-1">
+                          Product Highlights (Title | Subtitle, one per line)
+                        </label>
+                        <textarea
+                          rows={4}
+                          placeholder={"Spacious | প্রচুর জায়গা\nDurable | টেকসই ফ্যাব্রিক\nEasy Carry | মজবুত হ্যান্ডেল\nSmart Zips | সহজে খোলা-বন্ধ"}
+                          value={productForm.highlightsText}
+                          onChange={(e) =>
+                            setProductForm({ ...productForm, highlightsText: e.target.value })
+                          }
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 bg-white text-sm"
+                        />
+                      </div>
+
+                      <div className="sm:col-span-2">
+                        <label className="block text-[11px] font-semibold text-gray-600 mb-1">
+                          Full Description
+                        </label>
+                        <textarea
+                          rows={5}
+                          placeholder="Detailed product description (supports line breaks & emojis)..."
                           value={productForm.description}
                           onChange={(e) =>
                             setProductForm({ ...productForm, description: e.target.value })
