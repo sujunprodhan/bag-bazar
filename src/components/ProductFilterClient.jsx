@@ -7,6 +7,7 @@ import ProductCard from './ProductCard';
 
 const categoryMeta = {
   'all': { label: 'All Products', emoji: '🛍️' },
+  'new-arrival': { label: 'New Arrival', emoji: '✨' },
   'handbag': { label: 'Handbag', emoji: '👜' },
   'ladies-bag': { label: 'Ladies Bag', emoji: '👛' },
   'tote-bag': { label: 'Tote Bag', emoji: '🎒' },
@@ -63,12 +64,23 @@ const ProductFilterClient = ({ initialProducts = [] }) => {
 
   const categories = useMemo(() => {
     const countMap = {};
+    let newArrivalCount = 0;
     initialProducts.forEach((p) => {
       const cat = p.category || 'other';
       countMap[cat] = (countMap[cat] || 0) + 1;
+      if (p.category === 'new-arrival' || p.isNewArrival) {
+        newArrivalCount += 1;
+      }
     });
+    delete countMap['new-arrival'];
     return [
       { slug: 'all', label: 'All Products', emoji: '🛍️', count: initialProducts.length },
+      {
+        slug: 'new-arrival',
+        label: getCategoryLabel('new-arrival'),
+        emoji: getCategoryEmoji('new-arrival'),
+        count: newArrivalCount,
+      },
       ...Object.entries(countMap)
         .sort((a, b) => b[1] - a[1])
         .map(([slug, count]) => ({
@@ -84,7 +96,10 @@ const ProductFilterClient = ({ initialProducts = [] }) => {
     return initialProducts
       .filter((product) => {
         const matchesCategory =
-          selectedCategory === 'all' || product.category === selectedCategory;
+          selectedCategory === 'all' ||
+          (selectedCategory === 'new-arrival'
+            ? product.category === 'new-arrival' || Boolean(product.isNewArrival)
+            : product.category === selectedCategory);
 
         const matchesSearch =
           !searchQuery.trim() ||

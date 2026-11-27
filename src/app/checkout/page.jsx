@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import {
@@ -8,10 +8,15 @@ import {
   FiTruck,
   FiSmartphone,
   FiShoppingBag,
+  FiCopy,
+  FiCheck,
 } from 'react-icons/fi';
 import { useShop } from '@/context/ShopContext';
 import Container from '@/layout/Container';
+import InvoiceActions from '@/components/InvoiceActions';
+import { PaymentMethodLogo } from '@/components/PaymentLogos';
 import { createOrderAction } from '@/actions/server/order';
+import { getPaymentSettingsAction } from '@/actions/server/settings';
 
 const paymentMethods = [
   {
@@ -28,7 +33,8 @@ const paymentMethods = [
     desc: 'Send money to our bKash merchant/personal number.',
     color: 'border-pink-500 bg-pink-50',
     badge: 'bg-pink-600',
-    accountNumber: '01700-000000 (Personal)',
+    accountNumber: '01608-054610 (Personal)',
+    rawNumber: '01608-054610',
   },
   {
     id: 'nagad',
@@ -36,7 +42,8 @@ const paymentMethods = [
     desc: 'Send money to our Nagad account and enter TrxID.',
     color: 'border-orange-500 bg-orange-50',
     badge: 'bg-orange-500',
-    accountNumber: '01800-000000 (Personal)',
+    accountNumber: '01608-054610 (Personal)',
+    rawNumber: '01608-054610',
   },
   {
     id: 'rocket',
@@ -44,7 +51,8 @@ const paymentMethods = [
     desc: 'Send money via DBBL Rocket and enter TrxID.',
     color: 'border-purple-500 bg-purple-50',
     badge: 'bg-purple-600',
-    accountNumber: '01900-000000-1 (Personal)',
+    accountNumber: '01608-054610 (Personal)',
+    rawNumber: '01608-054610',
   },
   {
     id: 'upay',
@@ -52,7 +60,8 @@ const paymentMethods = [
     desc: 'Send money via Upay wallet and enter TrxID.',
     color: 'border-sky-500 bg-sky-50',
     badge: 'bg-sky-600',
-    accountNumber: '01600-000000 (Personal)',
+    accountNumber: '01608-054610 (Personal)',
+    rawNumber: '01608-054610',
   },
 ];
 
@@ -61,7 +70,7 @@ export default function CheckoutPage() {
   const { cart, cartTotal, setCartDirect } = useShop();
 
   const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(null);
   const [phone, setPhone] = useState('');
   const [area, setArea] = useState('dhaka');
   const [address, setAddress] = useState('');
@@ -72,12 +81,50 @@ export default function CheckoutPage() {
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [confirmedOrder, setConfirmedOrder] = useState(null);
+  const [confirmationEmailSent, setConfirmationEmailSent] = useState(false);
+  const [paymentSettings, setPaymentSettings] = useState(null);
+  const [copiedNumber, setCopiedNumber] = useState(false);
 
-  const effectiveEmail = email || session?.user?.email || '';
+  useEffect(() => {
+    let active = true;
+    getPaymentSettingsAction().then((settings) => {
+      if (active && settings) {
+        setPaymentSettings(settings);
+      }
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const effectiveEmail = email !== null ? email : session?.user?.email || '';
+
+  const resolvedPaymentMethods = paymentMethods
+    .map((m) => {
+      if (m.id === 'cod') return { ...m, enabled: true };
+      const cfg = paymentSettings?.[m.id];
+      if (!cfg) return { ...m, enabled: true };
+      return {
+        ...m,
+        enabled: cfg.enabled !== false,
+        accountNumber: `${cfg.number} (${cfg.accountType || 'Personal'})`,
+        rawNumber: cfg.number,
+        logoUrl: cfg.logoUrl || '',
+      };
+    })
+    .filter((m) => m.enabled);
 
   const deliveryFee = area === 'dhaka' ? 60 : 120;
   const grandTotal = cartTotal + deliveryFee;
-  const activePayment = paymentMethods.find((m) => m.id === paymentMethod);
+  const activePayment =
+    resolvedPaymentMethods.find((m) => m.id === paymentMethod) || resolvedPaymentMethods[0];
+
+  const handleCopyNumber = (num) => {
+    if (!num || typeof navigator === 'undefined') return;
+    navigator.clipboard?.writeText(num);
+    setCopiedNumber(true);
+    setTimeout(() => setCopiedNumber(false), 2000);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -119,6 +166,7 @@ export default function CheckoutPage() {
 
     setCartDirect([]);
     setConfirmedOrder(res.order);
+    setConfirmationEmailSent(Boolean(res.confirmationEmailSent));
   };
 
   if (confirmedOrder) {
@@ -136,6 +184,13 @@ export default function CheckoutPage() {
               Thank you, <strong>{confirmedOrder.name}</strong>! Your order{' '}
               <span className="font-bold text-orange-500">{confirmedOrder.orderId}</span> has been
               received.
+              {confirmationEmailSent && confirmedOrder.userEmail && (
+                <>
+                  {' '}
+                  A confirmation email has been sent to{' '}
+                  <strong className="text-gray-700">{confirmedOrder.userEmail}</strong>.
+                </>
+              )}
             </p>
 
             <div className="bg-gray-50 rounded-2xl p-5 text-left space-y-2 text-sm border border-gray-100">
@@ -173,7 +228,11 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3 pt-2 justify-center">
+            <div className="pt-2">
+              <InvoiceActions order={confirmedOrder} />
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-3 pt-1 justify-center">
               <Link
                 href="/product"
                 className="px-6 py-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm transition shadow-sm"
@@ -272,7 +331,7 @@ export default function CheckoutPage() {
 
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-                  Email Address (for Order Invoice)
+                  Email Address (for Order Confirmation &amp; Invoice)
                 </label>
                 <input
                   type="email"
@@ -350,7 +409,7 @@ export default function CheckoutPage() {
               </h2>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {paymentMethods.map((method) => {
+                {resolvedPaymentMethods.map((method) => {
                   const isActive = paymentMethod === method.id;
                   return (
                     <button
@@ -363,8 +422,8 @@ export default function CheckoutPage() {
                           : 'border-gray-200 bg-white hover:border-gray-300'
                       }`}
                     >
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="font-bold text-sm text-gray-900">{method.name}</span>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <PaymentMethodLogo id={method.id} logoUrl={method.logoUrl} />
                         <span
                           className={`w-3 h-3 rounded-full ${
                             isActive ? method.badge : 'bg-gray-200'
@@ -379,12 +438,33 @@ export default function CheckoutPage() {
 
               {paymentMethod !== 'cod' && activePayment && (
                 <div className="p-4 rounded-xl bg-gray-50 border border-gray-200 space-y-3 animate-card-in">
-                  <p className="text-xs text-gray-700 leading-relaxed">
-                    Please send{' '}
-                    <strong className="text-orange-500">৳{grandTotal.toLocaleString()}</strong> to{' '}
-                    <strong>{activePayment.accountNumber}</strong> via{' '}
-                    <strong>{activePayment.name}</strong> and provide the details below:
-                  </p>
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <p className="text-xs text-gray-700 leading-relaxed">
+                      Please send{' '}
+                      <strong className="text-orange-500">৳{grandTotal.toLocaleString()}</strong> to{' '}
+                      <strong className="text-gray-900">{activePayment.accountNumber}</strong> via{' '}
+                      <strong>{activePayment.name}</strong> and provide the details below:
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleCopyNumber(activePayment.rawNumber || activePayment.accountNumber)
+                      }
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-gray-200 hover:border-orange-400 text-[11px] font-semibold text-gray-700 transition cursor-pointer shrink-0"
+                    >
+                      {copiedNumber ? (
+                        <>
+                          <FiCheck className="text-emerald-600" />
+                          <span>Copied</span>
+                        </>
+                      ) : (
+                        <>
+                          <FiCopy />
+                          <span>Copy Number</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <label className="block text-xs font-semibold text-gray-700 mb-1">

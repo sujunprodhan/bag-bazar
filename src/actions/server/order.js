@@ -3,6 +3,7 @@
 import { getAuthSession } from '@/lib/getAuthSession';
 import { collections, dbConnect } from '@/lib/dbConnect';
 import { getSessionId } from '@/lib/session';
+import { sendOrderConfirmationEmail } from '@/lib/mailer';
 
 export async function createOrderAction(orderData) {
   try {
@@ -35,7 +36,13 @@ export async function createOrderAction(orderData) {
     await dbConnect(collections.ORDER).insertOne(doc);
     await dbConnect(collections.CART).deleteMany({ sessionId });
 
-    return { success: true, order: JSON.parse(JSON.stringify(doc)) };
+    const emailResult = await sendOrderConfirmationEmail(doc);
+
+    return {
+      success: true,
+      order: JSON.parse(JSON.stringify(doc)),
+      confirmationEmailSent: Boolean(emailResult?.sent),
+    };
   } catch (error) {
     console.error('Error creating order:', error);
     return { success: false, error: 'Failed to place order. Please try again.' };

@@ -3,14 +3,31 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { FiEye, FiShoppingCart, FiHeart, FiLoader } from 'react-icons/fi';
 import { useShop } from '@/context/ShopContext';
+import Image from 'next/image';
 
 const colorHexMap = {
-  black: '#111827', grey: '#9CA3AF', gray: '#9CA3AF', orange: '#F97316',
-  pink: '#EC4899', navy: '#1E3A8A', blue: '#3B82F6', red: '#EF4444',
-  olive: '#556B2F', 'army green': '#4B5320', charcoal: '#374151',
-  'sky blue': '#38BDF8', yellow: '#EAB308', green: '#22C55E',
-  purple: '#A855F7', beige: '#F5F5DC', brown: '#8B4513', white: '#FFFFFF',
-  tan: '#D2B48C', gold: '#D4AF37', silver: '#C0C0C0', cream: '#FFFDD0',
+  black: '#111827',
+  grey: '#9CA3AF',
+  gray: '#9CA3AF',
+  orange: '#F97316',
+  pink: '#EC4899',
+  navy: '#1E3A8A',
+  blue: '#3B82F6',
+  red: '#EF4444',
+  olive: '#556B2F',
+  'army green': '#4B5320',
+  charcoal: '#374151',
+  'sky blue': '#38BDF8',
+  yellow: '#EAB308',
+  green: '#22C55E',
+  purple: '#A855F7',
+  beige: '#F5F5DC',
+  brown: '#8B4513',
+  white: '#FFFFFF',
+  tan: '#D2B48C',
+  gold: '#D4AF37',
+  silver: '#C0C0C0',
+  cream: '#FFFDD0',
 };
 
 const ProductCard = ({ product, index = 0 }) => {
@@ -38,13 +55,14 @@ const ProductCard = ({ product, index = 0 }) => {
   return (
     <div
       style={{ animationDelay: `${(index % 9) * 55}ms` }}
-      className="animate-card-in bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col group"
+      className="animate-card-in  rounded-2xl border border-gray-100 overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col group"
     >
-      <div className="relative w-full aspect-[4/3] lg:aspect-square bg-gray-100 overflow-hidden">
+      <div className="relative w-full aspect-4/3 lg:aspect-square bg-gray-100 overflow-hidden">
         {mainImage && !imgError ? (
-          <img
+          <Image
             src={mainImage}
             alt={product.name || 'Product'}
+            fill
             loading="lazy"
             referrerPolicy="no-referrer"
             onError={() => setImgError(true)}

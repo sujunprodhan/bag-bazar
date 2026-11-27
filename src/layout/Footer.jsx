@@ -11,6 +11,7 @@ import {
   FiLinkedin,
 } from 'react-icons/fi';
 import Container from './Container';
+import { FooterPaymentLogos } from '@/components/PaymentLogos';
 
 const Footer = () => {
   const quickLinks = [
@@ -176,24 +177,7 @@ const Footer = () => {
               &copy; {new Date().getFullYear()} <span className="text-white font-medium">BagBazar</span>. All rights reserved.
             </p>
 
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="mr-1 text-slate-400">Payment Methods:</span>
-              <span className="px-2.5 py-1 bg-white/10 rounded text-[11px] font-medium text-slate-200">
-                bKash
-              </span>
-              <span className="px-2.5 py-1 bg-white/10 rounded text-[11px] font-medium text-slate-200">
-                Nagad
-              </span>
-              <span className="px-2.5 py-1 bg-white/10 rounded text-[11px] font-medium text-slate-200">
-                Visa
-              </span>
-              <span className="px-2.5 py-1 bg-white/10 rounded text-[11px] font-medium text-slate-200">
-                Mastercard
-              </span>
-              <span className="px-2.5 py-1 bg-white/10 rounded text-[11px] font-medium text-slate-200">
-                COD
-              </span>
-            </div>
+            <FooterPaymentLogos />
           </div>
         </Container>
       </div>

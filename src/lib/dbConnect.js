@@ -10,6 +10,7 @@ export const collections = {
   ORDER: 'order',
   USER: 'user',
   CHAT: 'chat',
+  SETTINGS: 'settings',
 };
 
 const client = uri

@@ -22,6 +22,7 @@ import { useShop } from '@/context/ShopContext';
 
 const productCategories = [
   { name: 'All Products', href: '/product' },
+  { name: 'New Arrival', href: '/product?category=new-arrival' },
   { name: 'Backpack', href: '/product?category=backpack' },
   { name: 'Travel Bag', href: '/product?category=travel-bag' },
   { name: 'Ladies Bag', href: '/product?category=ladies-bag' },

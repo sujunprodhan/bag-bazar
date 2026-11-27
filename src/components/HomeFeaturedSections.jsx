@@ -42,7 +42,7 @@ function CategoryShowcaseBlock({ tag, title, emoji, items, viewAllHref, bgClass 
 }
 
 export default function HomeFeaturedSections({ products = [] }) {
-  const newArrivals = products.filter((p) => p.isNewArrival);
+  const newArrivals = products.filter((p) => p.category === 'new-arrival' || p.isNewArrival);
   const schoolBags = products.filter((p) => p.category === 'school-bag');
   const babyBags = products.filter((p) => p.category === 'baby-bag');
 
@@ -53,7 +53,7 @@ export default function HomeFeaturedSections({ products = [] }) {
         title="New Arrivals"
         emoji="✨"
         items={newArrivals}
-        viewAllHref="/product"
+        viewAllHref="/product?category=new-arrival"
         bgClass="bg-gray-50"
       />
       <CategoryShowcaseBlock

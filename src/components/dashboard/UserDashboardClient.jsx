@@ -16,6 +16,7 @@ import {
 } from 'react-icons/fi';
 import Container from '@/layout/Container';
 import ProductCard from '@/components/ProductCard';
+import InvoiceActions from '@/components/InvoiceActions';
 import { setUserPasswordAction } from '@/actions/server/auth';
 
 const statusColors = {
@@ -310,15 +311,25 @@ export default function UserDashboardClient({ user, initialData }) {
                           key={order._id}
                           className="p-4 rounded-xl bg-gray-50 border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                         >
-                          <div>
-                            <p className="font-bold text-sm text-primary">
-                              Order #{order.orderId}
-                            </p>
-                            <p className="text-xs text-muted mt-0.5">
-                              {order.items?.length || 0} items • {order.paymentName}
-                            </p>
-                          </div>
                           <div className="flex items-center gap-3">
+                            {order.items?.[0]?.image || order.items?.[0]?.images?.[0] ? (
+                              <img
+                                src={order.items[0].image || order.items[0].images[0]}
+                                alt={order.items[0].name || 'Order item'}
+                                referrerPolicy="no-referrer"
+                                className="w-11 h-11 rounded-lg object-cover border border-gray-200 bg-white shrink-0"
+                              />
+                            ) : null}
+                            <div>
+                              <p className="font-bold text-sm text-primary">
+                                Order #{order.orderId}
+                              </p>
+                              <p className="text-xs text-muted mt-0.5">
+                                {order.items?.length || 0} items • {order.paymentName}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex flex-wrap items-center gap-3">
                             <span
                               className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold border capitalize ${
                                 statusColors[order.status] || statusColors.pending
@@ -329,6 +340,7 @@ export default function UserDashboardClient({ user, initialData }) {
                             <span className="font-extrabold text-sm text-primary">
                               ৳{Number(order.total || 0).toLocaleString()}
                             </span>
+                            <InvoiceActions order={order} compact />
                           </div>
                         </div>
                       ))}
@@ -371,28 +383,48 @@ export default function UserDashboardClient({ user, initialData }) {
                           </span>
                         </div>
 
-                        <div className="space-y-1.5 text-xs text-gray-600">
-                          {order.items?.map((item, idx) => (
-                            <div key={idx} className="flex justify-between">
-                              <span>
-                                {item.name} × {item.quantity} ({item.selectedColor},{' '}
-                                {item.selectedSize})
-                              </span>
-                              <span className="font-semibold text-gray-900">
-                                ৳{((item.price || 0) * (item.quantity || 1)).toLocaleString()}
-                              </span>
-                            </div>
-                          ))}
+                        <div className="space-y-2 text-xs text-gray-600">
+                          {order.items?.map((item, idx) => {
+                            const imgSrc = item.image || item.images?.[0];
+                            return (
+                              <div key={idx} className="flex items-center justify-between gap-3">
+                                <div className="flex items-center gap-2.5 min-w-0">
+                                  {imgSrc ? (
+                                    <img
+                                      src={imgSrc}
+                                      alt={item.name}
+                                      referrerPolicy="no-referrer"
+                                      className="w-10 h-10 rounded-lg object-cover border border-gray-200 bg-white shrink-0"
+                                    />
+                                  ) : (
+                                    <div className="w-10 h-10 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-400 shrink-0">
+                                      <FiPackage />
+                                    </div>
+                                  )}
+                                  <span className="truncate">
+                                    {item.name} × {item.quantity} ({item.selectedColor},{' '}
+                                    {item.selectedSize})
+                                  </span>
+                                </div>
+                                <span className="font-semibold text-gray-900 shrink-0">
+                                  ৳{((item.price || 0) * (item.quantity || 1)).toLocaleString()}
+                                </span>
+                              </div>
+                            );
+                          })}
                         </div>
 
-                        <div className="pt-2 border-t border-gray-200/70 flex flex-wrap justify-between items-center text-xs">
+                        <div className="pt-2 border-t border-gray-200/70 flex flex-wrap justify-between items-center gap-3 text-xs">
                           <span className="text-muted">
                             Payment: <strong className="text-primary">{order.paymentName}</strong>
                             {order.trxId ? ` (TrxID: ${order.trxId})` : ''}
                           </span>
-                          <span className="font-extrabold text-base text-accent">
-                            Total: ৳{Number(order.total || 0).toLocaleString()}
-                          </span>
+                          <div className="flex flex-wrap items-center gap-3">
+                            <InvoiceActions order={order} compact />
+                            <span className="font-extrabold text-base text-accent">
+                              Total: ৳{Number(order.total || 0).toLocaleString()}
+                            </span>
+                          </div>
                         </div>
                       </div>
                     ))}

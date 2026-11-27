@@ -11,7 +11,11 @@ const HomeCategorySection = ({ products = [] }) => {
   const [page, setPage] = useState(0);
 
   const featuredProducts = products.filter(
-    (p) => p.isNewArrival || p.category === 'school-bag' || p.category === 'baby-bag'
+    (p) =>
+      p.category === 'new-arrival' ||
+      p.isNewArrival ||
+      p.category === 'school-bag' ||
+      p.category === 'baby-bag'
   );
   const displayList = featuredProducts.length > 0 ? featuredProducts : products;
 

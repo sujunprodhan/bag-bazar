@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { signOut } from 'next-auth/react';
+import InvoiceActions from '@/components/InvoiceActions';
 import {
   FiGrid,
   FiPackage,
@@ -16,8 +17,11 @@ import {
   FiMessageSquare,
   FiSend,
   FiEdit2,
+  FiCreditCard,
 } from 'react-icons/fi';
 import Container from '@/layout/Container';
+import { PaymentMethodLogo } from '@/components/PaymentLogos';
+import { updatePaymentSettingsAction } from '@/actions/server/settings';
 import {
   updateOrderStatusAction,
   deleteOrderAction,
@@ -44,6 +48,7 @@ const statusColors = {
 };
 
 const defaultCategories = [
+  'new-arrival',
   'backpack',
   'travel-bag',
   'ladies-bag',
@@ -88,6 +93,16 @@ export default function AdminDashboardClient({ user, initialData }) {
   const [chatReply, setChatReply] = useState('');
   const [sendingReply, setSendingReply] = useState(false);
   const [feedback, setFeedback] = useState('');
+  const [orderFilter, setOrderFilter] = useState('all');
+  const [paymentSettings, setPaymentSettings] = useState(
+    initialData?.paymentSettings || {
+      bkash: { number: '01608-054610', accountType: 'Personal', enabled: true, logoUrl: '/bkash.png' },
+      nagad: { number: '01608-054610', accountType: 'Personal', enabled: true, logoUrl: '/nogad.jpg' },
+      rocket: { number: '01608-054610', accountType: 'Personal', enabled: true, logoUrl: '/roketpay.png' },
+      upay: { number: '01608-054610', accountType: 'Personal', enabled: true, logoUrl: '/upay.png' },
+    }
+  );
+  const [savingPayments, setSavingPayments] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -127,6 +142,40 @@ export default function AdminDashboardClient({ user, initialData }) {
     .filter((o) => o.status !== 'cancelled')
     .reduce((sum, o) => sum + (Number(o.total) || 0), 0);
   const pendingOrders = orders.filter((o) => o.status === 'pending').length;
+  const cancelledOrders = orders.filter((o) => o.status === 'cancelled').length;
+  const filteredOrders =
+    orderFilter === 'all' ? orders : orders.filter((o) => o.status === orderFilter);
+
+  const handleLogoFileUpload = (key, file) => {
+    if (!file) return;
+    if (file.size > 500 * 1024) {
+      showNotice('Please upload a logo image smaller than 500KB.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        setPaymentSettings((prev) => ({
+          ...prev,
+          [key]: { ...prev[key], logoUrl: reader.result },
+        }));
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleSavePaymentSettings = async (e) => {
+    e.preventDefault();
+    setSavingPayments(true);
+    const res = await updatePaymentSettingsAction(paymentSettings);
+    setSavingPayments(false);
+    if (res?.success) {
+      setPaymentSettings(res.settings);
+      showNotice('Payment numbers saved! Checkout will now show your updated numbers.');
+    } else {
+      showNotice(res?.error || 'Failed to save payment settings');
+    }
+  };
 
   const handleStatusChange = async (orderId, newStatus) => {
     setOrders((prev) =>
@@ -283,6 +332,7 @@ export default function AdminDashboardClient({ user, initialData }) {
       label: unreadChatCount > 0 ? `Live Chat (${unreadChatCount})` : 'Live Chat',
       icon: FiMessageSquare,
     },
+    { id: 'payments', label: 'Payment Numbers', icon: FiCreditCard },
   ];
 
   const activeThread =
@@ -363,6 +413,9 @@ export default function AdminDashboardClient({ user, initialData }) {
                     </div>
                     <p className="font-heading font-extrabold text-2xl text-primary">
                       ৳{totalRevenue.toLocaleString()}
+                    </p>
+                    <p className="text-[11px] text-muted mt-1">
+                      Excludes cancelled orders{cancelledOrders > 0 ? ` (${cancelledOrders} cancelled)` : ''}
                     </p>
                   </div>
 
@@ -455,72 +508,136 @@ export default function AdminDashboardClient({ user, initialData }) {
 
             {activeTab === 'orders' && (
               <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-xs space-y-4">
-                <h2 className="font-heading font-bold text-xl text-primary">Manage Orders</h2>
-                {orders.length === 0 ? (
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <h2 className="font-heading font-bold text-xl text-primary">Manage Orders</h2>
+                  <div className="flex flex-wrap gap-1.5">
+                    {['all', ...orderStatuses].map((st) => {
+                      const count =
+                        st === 'all' ? orders.length : orders.filter((o) => o.status === st).length;
+                      const isActive = orderFilter === st;
+                      return (
+                        <button
+                          key={st}
+                          type="button"
+                          onClick={() => setOrderFilter(st)}
+                          className={`px-3 py-1.5 rounded-full text-xs font-semibold capitalize transition cursor-pointer ${
+                            isActive
+                              ? 'bg-primary text-white'
+                              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                          }`}
+                        >
+                          {st} ({count})
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+                {filteredOrders.length === 0 ? (
                   <p className="text-sm text-muted py-8 text-center">No orders found.</p>
                 ) : (
                   <div className="space-y-3">
-                    {orders.map((order) => (
+                    {filteredOrders.map((order) => (
                       <div
                         key={order._id}
-                        className="rounded-xl border border-gray-100 bg-gray-50/70 p-4 flex flex-col md:flex-row md:items-center justify-between gap-4"
+                        className="rounded-xl border border-gray-100 bg-gray-50/70 p-4 space-y-3"
                       >
-                        <div className="space-y-1 text-xs">
-                          <div className="flex items-center gap-2">
-                            <span className="font-bold text-sm text-primary">
-                              #{order.orderId}
-                            </span>
-                            <span className="text-muted">• {order.paymentName}</span>
-                            {order.trxId && (
-                              <span className="px-2 py-0.5 rounded bg-white border border-gray-200 font-mono text-[11px]">
-                                TrxID: {order.trxId}
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                          <div className="space-y-1 text-xs">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="font-bold text-sm text-primary">
+                                #{order.orderId}
                               </span>
-                            )}
+                              <span className="text-muted">• {order.paymentName}</span>
+                              {order.trxId && (
+                                <span className="px-2 py-0.5 rounded bg-white border border-gray-200 font-mono text-[11px]">
+                                  TrxID: {order.trxId}
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-gray-700 font-medium">
+                              {order.name} ({order.phone}) — {order.address}
+                            </p>
+                            <p className="text-muted">
+                              {order.items?.length || 0} item(s) • Total:{' '}
+                              <strong className="text-accent">
+                                ৳{Number(order.total || 0).toLocaleString()}
+                              </strong>
+                            </p>
                           </div>
-                          <p className="text-gray-700 font-medium">
-                            {order.name} ({order.phone}) — {order.address}
-                          </p>
-                          <p className="text-muted">
-                            {order.items?.length || 0} item(s) • Total:{' '}
-                            <strong className="text-accent">
-                              ৳{Number(order.total || 0).toLocaleString()}
-                            </strong>
-                          </p>
-                        </div>
 
-                        <div className="flex flex-wrap items-center gap-2 shrink-0">
-                          {order.status !== 'approved' && (
+                          <div className="flex flex-wrap items-center gap-2 shrink-0">
+                            <InvoiceActions order={order} compact />
+                            {order.status !== 'approved' && (
+                              <button
+                                type="button"
+                                onClick={() => handleStatusChange(order._id, 'approved')}
+                                className="inline-flex items-center gap-1 px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition cursor-pointer"
+                              >
+                                <FiCheck />
+                                <span>Approve</span>
+                              </button>
+                            )}
+
+                            <select
+                              value={order.status || 'pending'}
+                              onChange={(e) => handleStatusChange(order._id, e.target.value)}
+                              className="px-3 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-primary focus:border-accent focus:outline-none cursor-pointer capitalize"
+                            >
+                              {orderStatuses.map((st) => (
+                                <option key={st} value={st}>
+                                  {st}
+                                </option>
+                              ))}
+                            </select>
+
                             <button
                               type="button"
-                              onClick={() => handleStatusChange(order._id, 'approved')}
-                              className="inline-flex items-center gap-1 px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition cursor-pointer"
+                              onClick={() => handleDeleteOrder(order._id)}
+                              aria-label={`Delete order ${order.orderId}`}
+                              className="p-2 rounded-xl border border-rose-200 text-rose-600 hover:bg-rose-50 transition cursor-pointer"
                             >
-                              <FiCheck />
-                              <span>Approve</span>
+                              <FiTrash2 className="text-sm" />
                             </button>
-                          )}
-
-                          <select
-                            value={order.status || 'pending'}
-                            onChange={(e) => handleStatusChange(order._id, e.target.value)}
-                            className="px-3 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-primary focus:border-accent focus:outline-none cursor-pointer capitalize"
-                          >
-                            {orderStatuses.map((st) => (
-                              <option key={st} value={st}>
-                                {st}
-                              </option>
-                            ))}
-                          </select>
-
-                          <button
-                            type="button"
-                            onClick={() => handleDeleteOrder(order._id)}
-                            aria-label={`Delete order ${order.orderId}`}
-                            className="p-2 rounded-xl border border-rose-200 text-rose-600 hover:bg-rose-50 transition cursor-pointer"
-                          >
-                            <FiTrash2 className="text-sm" />
-                          </button>
+                          </div>
                         </div>
+
+                        {order.items?.length > 0 && (
+                          <div className="pt-2.5 border-t border-gray-200/70 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            {order.items.map((item, idx) => {
+                              const imgSrc = item.image || item.images?.[0];
+                              return (
+                                <div
+                                  key={idx}
+                                  className="flex items-center gap-2.5 bg-white rounded-lg p-2 border border-gray-100 text-xs"
+                                >
+                                  {imgSrc ? (
+                                    <img
+                                      src={imgSrc}
+                                      alt={item.name}
+                                      referrerPolicy="no-referrer"
+                                      className="w-10 h-10 rounded-md object-cover border border-gray-200 shrink-0"
+                                    />
+                                  ) : (
+                                    <div className="w-10 h-10 rounded-md bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-400 shrink-0">
+                                      <FiPackage />
+                                    </div>
+                                  )}
+                                  <div className="min-w-0 flex-1">
+                                    <p className="font-semibold text-primary truncate">{item.name}</p>
+                                    <p className="text-[11px] text-muted">
+                                      Qty: {item.quantity || 1}
+                                      {item.selectedColor ? ` • ${item.selectedColor}` : ''}
+                                      {item.selectedSize ? ` • ${item.selectedSize}` : ''}
+                                    </p>
+                                  </div>
+                                  <span className="font-bold text-gray-800 shrink-0">
+                                    ৳{((Number(item.price) || 0) * (Number(item.quantity) || 1)).toLocaleString()}
+                                  </span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -1037,6 +1154,150 @@ export default function AdminDashboardClient({ user, initialData }) {
                     </div>
                   )}
                 </div>
+              </div>
+            )}
+
+            {activeTab === 'payments' && (
+              <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-xs space-y-5">
+                <div>
+                  <h2 className="font-heading font-bold text-xl text-primary">
+                    Mobile Payment Numbers
+                  </h2>
+                  <p className="text-xs text-muted mt-1">
+                    Add your real bKash, Nagad, Rocket, and Upay numbers here. Customers will see
+                    these exact numbers at checkout to send payment directly to you.
+                  </p>
+                </div>
+
+                <form onSubmit={handleSavePaymentSettings} className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {['bkash', 'nagad', 'rocket', 'upay'].map((key) => {
+                      const cfg = paymentSettings[key] || {
+                        number: '',
+                        accountType: 'Personal',
+                        enabled: true,
+                      };
+                      return (
+                        <div
+                          key={key}
+                          className="rounded-xl border border-gray-200 bg-gray-50/70 p-4 space-y-3"
+                        >
+                          <div className="flex items-center justify-between">
+                            <PaymentMethodLogo id={key} logoUrl={cfg.logoUrl} size="md" />
+                            <label className="inline-flex items-center gap-2 text-xs font-semibold text-gray-700 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={cfg.enabled !== false}
+                                onChange={(e) =>
+                                  setPaymentSettings((prev) => ({
+                                    ...prev,
+                                    [key]: { ...prev[key], enabled: e.target.checked },
+                                  }))
+                                }
+                                className="rounded border-gray-300 text-accent focus:ring-accent"
+                              />
+                              <span>Enabled</span>
+                            </label>
+                          </div>
+
+                          <div>
+                            <label className="block text-[11px] font-semibold text-gray-600 mb-1">
+                              Admin Number
+                            </label>
+                            <input
+                              type="text"
+                              required
+                              placeholder="01XXXXXXXXX"
+                              value={cfg.number}
+                              onChange={(e) =>
+                                setPaymentSettings((prev) => ({
+                                  ...prev,
+                                  [key]: { ...prev[key], number: e.target.value },
+                                }))
+                              }
+                              className="w-full px-3.5 py-2 rounded-xl border border-gray-200 bg-white text-sm focus:border-accent focus:outline-none"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-[11px] font-semibold text-gray-600 mb-1">
+                              Account Type
+                            </label>
+                            <select
+                              value={cfg.accountType || 'Personal'}
+                              onChange={(e) =>
+                                setPaymentSettings((prev) => ({
+                                  ...prev,
+                                  [key]: { ...prev[key], accountType: e.target.value },
+                                }))
+                              }
+                              className="w-full px-3.5 py-2 rounded-xl border border-gray-200 bg-white text-sm focus:border-accent focus:outline-none"
+                            >
+                              <option value="Personal">Personal (Send Money)</option>
+                              <option value="Merchant">Merchant (Payment)</option>
+                              <option value="Agent">Agent (Cash Out)</option>
+                            </select>
+                          </div>
+
+                          <div className="space-y-2 pt-1 border-t border-gray-200/80">
+                            <label className="block text-[11px] font-semibold text-gray-600">
+                              Custom Logo Image (Upload or URL)
+                            </label>
+                            <div className="flex flex-wrap items-center gap-2">
+                              <label className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-gray-200 hover:border-accent text-xs font-semibold text-gray-700 transition cursor-pointer">
+                                <span>Upload Logo</span>
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  onChange={(e) => {
+                                    handleLogoFileUpload(key, e.target.files?.[0]);
+                                    e.target.value = '';
+                                  }}
+                                  className="hidden"
+                                />
+                              </label>
+                              {cfg.logoUrl && (
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setPaymentSettings((prev) => ({
+                                      ...prev,
+                                      [key]: { ...prev[key], logoUrl: '' },
+                                    }))
+                                  }
+                                  className="px-2.5 py-1.5 rounded-lg border border-rose-200 text-rose-600 hover:bg-rose-50 text-xs font-semibold transition cursor-pointer"
+                                >
+                                  Reset Logo
+                                </button>
+                              )}
+                            </div>
+                            <input
+                              type="text"
+                              placeholder="Or paste logo image URL (https://...)"
+                              value={cfg.logoUrl?.startsWith('data:') ? '' : cfg.logoUrl || ''}
+                              onChange={(e) =>
+                                setPaymentSettings((prev) => ({
+                                  ...prev,
+                                  [key]: { ...prev[key], logoUrl: e.target.value },
+                                }))
+                              }
+                              className="w-full px-3 py-1.5 rounded-lg border border-gray-200 bg-white text-xs focus:border-accent focus:outline-none"
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={savingPayments}
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-accent hover:opacity-90 disabled:opacity-60 text-white text-sm font-bold transition cursor-pointer"
+                  >
+                    {savingPayments ? <FiLoader className="animate-spin" /> : <FiCheck />}
+                    <span>{savingPayments ? 'Saving...' : 'Save Payment Numbers'}</span>
+                  </button>
+                </form>
               </div>
             )}
           </main>

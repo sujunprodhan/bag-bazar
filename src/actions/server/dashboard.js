@@ -6,6 +6,7 @@ import { collections, dbConnect } from '@/lib/dbConnect';
 import { getSessionId } from '@/lib/session';
 import { sendOrderInvoiceEmail } from '@/lib/mailer';
 import { getAdminChatThreadsAction } from '@/actions/server/chat';
+import { getPaymentSettingsAction } from '@/actions/server/settings';
 
 async function requireAdmin() {
   const session = await getAuthSession();
@@ -68,7 +69,7 @@ export async function getAdminDashboardData() {
   try {
     await requireAdmin();
 
-    const [orders, products, users, chatThreads] = await Promise.all([
+    const [orders, products, users, chatThreads, paymentSettings] = await Promise.all([
       dbConnect(collections.ORDER).find().sort({ createdAt: -1 }).toArray(),
       dbConnect(collections.PRODUCT).find().sort({ _id: -1 }).toArray(),
       dbConnect(collections.USER)
@@ -76,6 +77,7 @@ export async function getAdminDashboardData() {
         .sort({ createdAt: -1 })
         .toArray(),
       getAdminChatThreadsAction(),
+      getPaymentSettingsAction(),
     ]);
 
     const totalRevenue = orders
@@ -96,6 +98,7 @@ export async function getAdminDashboardData() {
       products: JSON.parse(JSON.stringify(products)),
       users: JSON.parse(JSON.stringify(users)),
       chatThreads: chatThreads || [],
+      paymentSettings,
     };
   } catch (error) {
     console.error('Error loading admin dashboard:', error);

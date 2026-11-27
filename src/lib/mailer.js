@@ -15,38 +15,12 @@ function getTransporter() {
   });
 }
 
-export async function sendAddToCartEmail({ to, userName, product, color, size, quantity }) {
+async function sendMailSafe({ to, subject, html, logLabel }) {
   if (!to) return { sent: false, reason: 'No recipient email' };
 
   const transporter = getTransporter();
-  const subject = `Added to Cart: ${product.name} | BagBazar`;
-  const html = `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #eee; border-radius: 12px; overflow: hidden;">
-      <div style="background: #0F2A43; color: #fff; padding: 20px 24px;">
-        <h2 style="margin: 0; font-size: 20px;">Bag<span style="color: #F26B21;">Bazar</span></h2>
-        <p style="margin: 4px 0 0; font-size: 13px; color: #cbd5e1;">Item Added to Your Shopping Cart</p>
-      </div>
-      <div style="padding: 24px;">
-        <p style="margin-top: 0; color: #1a1a1a;">Hi <strong>${userName || 'Customer'}</strong>,</p>
-        <p style="color: #4b5563; font-size: 14px;">You just added the following item to your BagBazar cart:</p>
-        <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px; margin: 16px 0;">
-          <p style="margin: 0 0 6px; font-weight: bold; font-size: 16px; color: #0F2A43;">${product.name}</p>
-          <p style="margin: 0; font-size: 13px; color: #6b7280;">
-            Color: <strong>${color}</strong> &bull; Size: <strong>${size}</strong> &bull; Qty: <strong>${quantity}</strong>
-          </p>
-          <p style="margin: 10px 0 0; font-size: 16px; font-weight: bold; color: #F26B21;">
-            Price: ৳${Number(product.price || 0).toLocaleString()}
-          </p>
-        </div>
-        <p style="font-size: 13px; color: #6b7280;">
-          Complete your order anytime from your Cart or Checkout page with Cash on Delivery, bKash, Nagad, Rocket, or Upay.
-        </p>
-      </div>
-    </div>
-  `;
-
   if (!transporter) {
-    console.log(`[Email Preview - Add to Cart] To: ${to} | Subject: ${subject}`);
+    console.log(`[Email Preview - ${logLabel}] To: ${to} | Subject: ${subject}`);
     return { sent: false, reason: 'SMTP not configured' };
   }
 
@@ -59,45 +33,61 @@ export async function sendAddToCartEmail({ to, userName, product, color, size, q
     });
     return { sent: true };
   } catch (error) {
-    console.error('Error sending Add to Cart email:', error);
+    console.error(`Error sending ${logLabel} email:`, error);
     return { sent: false, reason: error.message };
   }
 }
 
-export async function sendOrderInvoiceEmail(order) {
-  const to = order?.userEmail || order?.email;
-  if (!to) return { sent: false, reason: 'No recipient email on order' };
+function resolveAbsoluteImageUrl(img) {
+  if (!img || typeof img !== 'string') return null;
+  if (img.startsWith('http://') || img.startsWith('https://') || img.startsWith('data:')) {
+    return img;
+  }
+  const baseUrl = (
+    process.env.NEXT_PUBLIC_BASE_URL ||
+    process.env.NEXTAUTH_URL ||
+    'http://localhost:3000'
+  ).replace(/\/+$/, '');
+  return `${baseUrl}${img.startsWith('/') ? img : `/${img}`}`;
+}
 
-  const transporter = getTransporter();
-  const subject = `Order Approved & Invoice #${order.orderId} | BagBazar`;
-
+function buildOrderEmailHtml(order, { titleSuffix = '', statusLabel, statusColor, introHtml }) {
   const itemsRows = (order.items || [])
-    .map(
-      (item) => `
+    .map((item) => {
+      const imgUrl = resolveAbsoluteImageUrl(item.image || item.images?.[0]);
+      const imgCell = imgUrl
+        ? `<img src="${imgUrl}" alt="${item.name || 'Product'}" width="48" height="48" style="width: 48px; height: 48px; object-fit: cover; border-radius: 8px; border: 1px solid #e5e7eb; display: block;" />`
+        : '';
+      return `
       <tr>
         <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; font-size: 13px;">
-          <strong>${item.name}</strong><br/>
-          <span style="color: #6b7280; font-size: 12px;">${item.selectedColor || ''} • ${item.selectedSize || ''}</span>
+          <table cellpadding="0" cellspacing="0" border="0">
+            <tr>
+              ${imgCell ? `<td style="padding-right: 10px; vertical-align: middle;">${imgCell}</td>` : ''}
+              <td style="vertical-align: middle;">
+                <strong>${item.name}</strong><br/>
+                <span style="color: #6b7280; font-size: 12px;">${[item.selectedColor, item.selectedSize].filter(Boolean).join(' • ')}</span>
+              </td>
+            </tr>
+          </table>
         </td>
         <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; text-align: center; font-size: 13px;">${item.quantity}</td>
         <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; text-align: right; font-size: 13px;">৳${Number(item.price || 0).toLocaleString()}</td>
         <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; text-align: right; font-size: 13px; font-weight: bold;">৳${(Number(item.price || 0) * (item.quantity || 1)).toLocaleString()}</td>
       </tr>
-    `
-    )
+    `;
+    })
     .join('');
 
-  const html = `
+  return `
     <div style="font-family: Arial, sans-serif; max-width: 640px; margin: 0 auto; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden;">
-      <div style="background: #0F2A43; color: #fff; padding: 24px; display: flex; justify-content: space-between; align-items: center;">
-        <div>
-          <h1 style="margin: 0; font-size: 22px;">Bag<span style="color: #F26B21;">Bazar</span> Invoice</h1>
-          <p style="margin: 4px 0 0; font-size: 13px; color: #cbd5e1;">Order #${order.orderId} &bull; Status: <strong style="color: #34d399;">APPROVED</strong></p>
-        </div>
+      <div style="background: #0F2A43; color: #fff; padding: 24px;">
+        <h1 style="margin: 0; font-size: 22px;">Bag<span style="color: #F26B21;">Bazar</span>${titleSuffix ? ` ${titleSuffix}` : ''}</h1>
+        <p style="margin: 4px 0 0; font-size: 13px; color: #cbd5e1;">Order #${order.orderId} &bull; Status: <strong style="color: ${statusColor};">${statusLabel}</strong></p>
       </div>
       <div style="padding: 24px;">
         <p style="margin-top: 0; font-size: 14px; color: #1f2937;">
-          Hi <strong>${order.name}</strong>, your order has been <strong>approved</strong> by BagBazar and is now being prepared for delivery!
+          ${introHtml}
         </p>
         <div style="background: #f9fafb; border-radius: 10px; padding: 14px; margin: 16px 0; font-size: 13px; color: #374151;">
           <p style="margin: 0 0 4px;"><strong>Customer:</strong> ${order.name} (${order.phone})</p>
@@ -128,22 +118,72 @@ export async function sendOrderInvoiceEmail(order) {
       </div>
     </div>
   `;
+}
 
-  if (!transporter) {
-    console.log(`[Email Preview - Order Invoice] To: ${to} | Subject: ${subject}`);
-    return { sent: false, reason: 'SMTP not configured' };
-  }
+export async function sendAddToCartEmail({ to, userName, product, color, size, quantity }) {
+  const subject = `Added to Cart: ${product.name} | BagBazar`;
+  const imgUrl = resolveAbsoluteImageUrl(product.image || product.images?.[0]);
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #eee; border-radius: 12px; overflow: hidden;">
+      <div style="background: #0F2A43; color: #fff; padding: 20px 24px;">
+        <h2 style="margin: 0; font-size: 20px;">Bag<span style="color: #F26B21;">Bazar</span></h2>
+        <p style="margin: 4px 0 0; font-size: 13px; color: #cbd5e1;">Item Added to Your Shopping Cart</p>
+      </div>
+      <div style="padding: 24px;">
+        <p style="margin-top: 0; color: #1a1a1a;">Hi <strong>${userName || 'Customer'}</strong>,</p>
+        <p style="color: #4b5563; font-size: 14px;">You just added the following item to your BagBazar cart:</p>
+        <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px; margin: 16px 0;">
+          <table cellpadding="0" cellspacing="0" border="0">
+            <tr>
+              ${imgUrl ? `<td style="padding-right: 12px; vertical-align: middle;"><img src="${imgUrl}" alt="${product.name}" width="60" height="60" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 1px solid #e5e7eb; display: block;" /></td>` : ''}
+              <td style="vertical-align: middle;">
+                <p style="margin: 0 0 6px; font-weight: bold; font-size: 16px; color: #0F2A43;">${product.name}</p>
+                <p style="margin: 0; font-size: 13px; color: #6b7280;">
+                  Color: <strong>${color}</strong> &bull; Size: <strong>${size}</strong> &bull; Qty: <strong>${quantity}</strong>
+                </p>
+                <p style="margin: 8px 0 0; font-size: 16px; font-weight: bold; color: #F26B21;">
+                  Price: ৳${Number(product.price || 0).toLocaleString()}
+                </p>
+              </td>
+            </tr>
+          </table>
+        </div>
+        <p style="font-size: 13px; color: #6b7280;">
+          Complete your order anytime from your Cart or Checkout page with Cash on Delivery, bKash, Nagad, Rocket, or Upay.
+        </p>
+      </div>
+    </div>
+  `;
 
-  try {
-    await transporter.sendMail({
-      from: process.env.SMTP_FROM || `"BagBazar" <${process.env.SMTP_USER || process.env.EMAIL_USER}>`,
-      to,
-      subject,
-      html,
-    });
-    return { sent: true };
-  } catch (error) {
-    console.error('Error sending Order Invoice email:', error);
-    return { sent: false, reason: error.message };
-  }
+  return sendMailSafe({ to, subject, html, logLabel: 'Add to Cart' });
+}
+
+export async function sendOrderConfirmationEmail(order) {
+  const to = order?.userEmail || order?.email;
+  if (!to) return { sent: false, reason: 'No recipient email on order' };
+
+  const subject = `Order Confirmed #${order.orderId} | BagBazar`;
+  const html = buildOrderEmailHtml(order, {
+    titleSuffix: 'Order Confirmation',
+    statusLabel: 'PENDING APPROVAL',
+    statusColor: '#fbbf24',
+    introHtml: `Hi <strong>${order.name}</strong>, thank you for your order! We have received your order and it is currently awaiting admin approval. You will receive another confirmation email with your invoice once approved.`,
+  });
+
+  return sendMailSafe({ to, subject, html, logLabel: 'Order Confirmation' });
+}
+
+export async function sendOrderInvoiceEmail(order) {
+  const to = order?.userEmail || order?.email;
+  if (!to) return { sent: false, reason: 'No recipient email on order' };
+
+  const subject = `Order Approved & Invoice #${order.orderId} | BagBazar`;
+  const html = buildOrderEmailHtml(order, {
+    titleSuffix: 'Invoice',
+    statusLabel: 'APPROVED',
+    statusColor: '#34d399',
+    introHtml: `Hi <strong>${order.name}</strong>, your order has been <strong>approved</strong> by BagBazar and is now being prepared for delivery!`,
+  });
+
+  return sendMailSafe({ to, subject, html, logLabel: 'Order Invoice' });
 }

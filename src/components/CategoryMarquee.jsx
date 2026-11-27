@@ -9,6 +9,7 @@ import {
 } from 'react-icons/fi';
 
 const categoryMeta = {
+  'new-arrival':     { label: 'New Arrival',     icon: FiStar,        linear: 'from-amber-400 via-orange-500 to-rose-500' },
   'handbag':         { label: 'Handbag',         icon: FiShoppingBag, linear: 'from-rose-400 via-pink-500 to-purple-600' },
   'ladies-bag':      { label: 'Ladies Bag',      icon: FiStar,        linear: 'from-purple-400 via-violet-500 to-indigo-600' },
   'tote-bag':        { label: 'Tote Bag',        icon: FiPackage,     linear: 'from-blue-400 via-cyan-500 to-teal-600' },
@@ -68,8 +69,7 @@ const CategoryCard = ({ cat }) => {
 const CategoryMarquee = ({ products = [] }) => {
   const categories = useMemo(() => {
     const map = {};
-    products.forEach((p) => {
-      const slug = p.category;
+    const addToMap = (slug, p) => {
       if (!slug) return;
       if (!map[slug]) {
         const meta = categoryMeta[slug] || {};
@@ -86,6 +86,15 @@ const CategoryMarquee = ({ products = [] }) => {
         map[slug].image = p.images[0];
       }
       map[slug].count += 1;
+    };
+
+    products.forEach((p) => {
+      if (p.category) {
+        addToMap(p.category, p);
+      }
+      if (p.isNewArrival && p.category !== 'new-arrival') {
+        addToMap('new-arrival', p);
+      }
     });
 
     const list = Object.values(map);
