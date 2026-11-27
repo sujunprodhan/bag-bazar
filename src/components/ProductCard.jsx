@@ -40,7 +40,7 @@ const ProductCard = ({ product, index = 0 }) => {
       style={{ animationDelay: `${(index % 9) * 55}ms` }}
       className="animate-card-in bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col group"
     >
-      <div className="relative w-full h-64 sm:h-72 bg-gray-100 overflow-hidden">
+      <div className="relative w-full aspect-[4/3] lg:aspect-square bg-gray-100 overflow-hidden">
         {mainImage && !imgError ? (
           <img
             src={mainImage}
