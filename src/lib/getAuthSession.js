@@ -1,10 +1,18 @@
+import { cache } from 'react';
 import { cookies, headers } from 'next/headers';
 import { getToken } from 'next-auth/jwt';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/authOptions';
 import { collections, dbConnect } from '@/lib/dbConnect';
 
-export async function getAuthSession() {
+function isNextControlFlowError(error) {
+  const digest = error?.digest;
+  return (
+    typeof digest === 'string' && (digest === 'DYNAMIC_SERVER_USAGE' || digest.startsWith('NEXT_'))
+  );
+}
+
+export const getAuthSession = cache(async () => {
   try {
     let user = null;
 
@@ -12,9 +20,7 @@ export async function getAuthSession() {
       const cookieStore = await cookies();
       const headerStore = await headers();
 
-      const cookieMap = Object.fromEntries(
-        cookieStore.getAll().map((c) => [c.name, c.value])
-      );
+      const cookieMap = Object.fromEntries(cookieStore.getAll().map((c) => [c.name, c.value]));
       const headerMap = Object.fromEntries(headerStore.entries());
 
       const token = await getToken({
@@ -31,7 +37,8 @@ export async function getAuthSession() {
           image: token.image || token.picture || null,
         };
       }
-    } catch {
+    } catch (error) {
+      if (isNextControlFlowError(error)) throw error;
     }
 
     if (!user) {
@@ -54,16 +61,20 @@ export async function getAuthSession() {
         if (!dbUser) {
           return null;
         }
-        user.role = dbUser.role || user.role || 'user';
+        user.role = dbUser.role || 'user';
         if (dbUser.name) user.name = dbUser.name;
         if (dbUser.image) user.image = dbUser.image;
-      } catch {
+      } catch (error) {
+        if (isNextControlFlowError(error)) throw error;
+        console.error('Role lookup failed:', error);
+        user.role = 'user'; 
       }
     }
 
     return { user };
   } catch (error) {
+    if (isNextControlFlowError(error)) throw error;
     console.error('Error reading auth session:', error);
     return null;
   }
-}
+});
