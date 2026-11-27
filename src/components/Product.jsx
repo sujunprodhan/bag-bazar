@@ -4,6 +4,7 @@ import ProductFilterClient from './ProductFilterClient';
 
 const Product = async () => {
   const products = (await getProduct()) || [];
+  
 
   return <ProductFilterClient initialProducts={products} />;
 };

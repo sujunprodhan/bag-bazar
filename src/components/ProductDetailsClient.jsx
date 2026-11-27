@@ -63,6 +63,7 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }) 
                 <img
                   src={images[activeImg]}
                   alt={product.name}
+                  referrerPolicy="no-referrer"
                   className="absolute inset-0 w-full h-full object-cover"
                 />
               ) : (
@@ -94,7 +95,12 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }) 
                       activeImg === i ? 'border-orange-500 shadow' : 'border-gray-200 hover:border-orange-300'
                     }`}
                   >
-                    <img src={img} alt={`view ${i + 1}`} className="w-full h-full object-cover" />
+                    <img
+                      src={img}
+                      alt={`view ${i + 1}`}
+                      referrerPolicy="no-referrer"
+                      className="w-full h-full object-cover"
+                    />
                   </button>
                 ))}
               </div>

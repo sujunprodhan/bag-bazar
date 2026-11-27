@@ -29,6 +29,6 @@ function getClient() {
 }
 
 export const dbConnect = (cname) => {
-  const dbName = process.env.DB_NAME || 'bagbzar';
+  const dbName = process.env.DB_NAME || 'BagBazar';
   return getClient().db(dbName).collection(cname);
 };
