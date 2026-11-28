@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { FiShoppingCart, FiArrowLeft, FiCheck, FiCheckCircle, FiHeart, FiMinus, FiPlus, FiLoader } from 'react-icons/fi';
 import ProductCard from './ProductCard';
 import { useShop } from '@/context/ShopContext';
@@ -28,6 +29,7 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }) 
       ? product.highlights
       : defaultHighlights;
   const router = useRouter();
+  const { status } = useSession();
   const { addToCart, toggleFavorite, isFavorite } = useShop();
   const images = product.images?.length ? product.images : [];
   const [activeImg, setActiveImg] = useState(0);
@@ -290,7 +292,9 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }) 
                   setBuying(true);
                   try {
                     await addToCart(product, { color: selectedColor, size: selectedSize, quantity });
-                    router.push('/checkout');
+                    router.push(
+                      status === 'authenticated' ? '/checkout' : '/login?callbackUrl=/checkout'
+                    );
                   } finally {
                     setBuying(false);
                   }

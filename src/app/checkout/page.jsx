@@ -10,6 +10,8 @@ import {
   FiShoppingBag,
   FiCopy,
   FiCheck,
+  FiLock,
+  FiLoader,
 } from 'react-icons/fi';
 import { useShop } from '@/context/ShopContext';
 import Container from '@/layout/Container';
@@ -66,7 +68,7 @@ const paymentMethods = [
 ];
 
 export default function CheckoutPage() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const { cart, cartTotal, setCartDirect } = useShop();
 
   const [name, setName] = useState('');
@@ -244,6 +246,54 @@ export default function CheckoutPage() {
                 className="px-6 py-3 rounded-xl border border-gray-200 text-gray-700 hover:border-orange-400 hover:text-orange-500 font-semibold text-sm transition"
               >
                 Back to Home
+              </Link>
+            </div>
+          </div>
+        </Container>
+      </div>
+    );
+  }
+
+  if (status === 'loading') {
+    return (
+      <div className="bg-gray-50 min-h-screen py-14 flex items-center justify-center">
+        <Container>
+          <div className="max-w-md mx-auto bg-white rounded-2xl border border-gray-100 p-10 text-center shadow-xs space-y-3">
+            <FiLoader className="text-3xl text-orange-500 animate-spin mx-auto" />
+            <p className="text-sm font-medium text-gray-600">Checking your account...</p>
+          </div>
+        </Container>
+      </div>
+    );
+  }
+
+  if (status !== 'authenticated') {
+    return (
+      <div className="bg-gray-50 min-h-screen py-14">
+        <Container>
+          <div className="max-w-lg mx-auto bg-white rounded-3xl border border-gray-100 p-8 sm:p-10 text-center shadow-sm space-y-5 animate-card-in">
+            <div className="w-16 h-16 rounded-full bg-orange-50 text-orange-500 flex items-center justify-center mx-auto text-2xl">
+              <FiLock />
+            </div>
+            <h1 className="font-heading font-extrabold text-2xl text-gray-900">
+              Login or Register Required
+            </h1>
+            <p className="text-gray-500 text-sm">
+              Please log in to your BagBazar account or create a new account before proceeding to
+              checkout.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 pt-2 justify-center">
+              <Link
+                href="/login?callbackUrl=/checkout"
+                className="px-6 py-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm transition shadow-sm"
+              >
+                Login to Continue
+              </Link>
+              <Link
+                href="/register?callbackUrl=/checkout"
+                className="px-6 py-3 rounded-xl border border-gray-200 text-gray-700 hover:border-orange-400 hover:text-orange-500 font-semibold text-sm transition"
+              >
+                Create Account
               </Link>
             </div>
           </div>

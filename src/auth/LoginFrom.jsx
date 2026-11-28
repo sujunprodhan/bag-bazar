@@ -21,6 +21,8 @@ const LoginFrom = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const urlError = searchParams.get('error');
+  const rawCallback = searchParams.get('callbackUrl') || '/';
+  const callbackUrl = rawCallback.startsWith('/') && !rawCallback.startsWith('//') ? rawCallback : '/';
   const [showPassword, setShowPassword] = useState(false);
   const [authError, setAuthError] = useState('');
   const [needsPasswordSetup, setNeedsPasswordSetup] = useState(false);
@@ -70,7 +72,7 @@ const LoginFrom = () => {
       }
 
       if (res?.ok) {
-        router.push('/');
+        router.push(callbackUrl);
         router.refresh();
       }
     } catch {
@@ -80,7 +82,7 @@ const LoginFrom = () => {
 
   const handleGoogleLogin = async () => {
     setGoogleLoading(true);
-    await signIn('google', { callbackUrl: '/' });
+    await signIn('google', { callbackUrl });
   };
 
   return (
@@ -227,7 +229,14 @@ const LoginFrom = () => {
 
           <p className="text-center text-xs text-gray-500 mt-6">
             Don&apos;t have an account?{' '}
-            <Link href="/register" className="text-accent font-bold hover:underline">
+            <Link
+              href={
+                callbackUrl !== '/'
+                  ? `/register?callbackUrl=${encodeURIComponent(callbackUrl)}`
+                  : '/register'
+              }
+              className="text-accent font-bold hover:underline"
+            >
               Create an account
             </Link>
           </p>

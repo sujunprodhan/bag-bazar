@@ -23,6 +23,8 @@ const RegisterFrom = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const emailParam = searchParams.get('email') || '';
+  const rawCallback = searchParams.get('callbackUrl') || '/';
+  const callbackUrl = rawCallback.startsWith('/') && !rawCallback.startsWith('//') ? rawCallback : '/';
   const [showPassword, setShowPassword] = useState(false);
   const [authError, setAuthError] = useState('');
   const [googleLoading, setGoogleLoading] = useState(false);
@@ -64,10 +66,14 @@ const RegisterFrom = () => {
       });
 
       if (loginRes?.ok) {
-        router.push('/');
+        router.push(callbackUrl);
         router.refresh();
       } else {
-        router.push('/login');
+        router.push(
+          callbackUrl !== '/'
+            ? `/login?callbackUrl=${encodeURIComponent(callbackUrl)}`
+            : '/login'
+        );
       }
     } catch {
       setAuthError('Something went wrong. Please try again.');
@@ -76,7 +82,7 @@ const RegisterFrom = () => {
 
   const handleGoogleRegister = async () => {
     setGoogleLoading(true);
-    await signIn('google', { callbackUrl: '/' });
+    await signIn('google', { callbackUrl });
   };
 
   return (
@@ -268,7 +274,14 @@ const RegisterFrom = () => {
 
           <p className="text-center text-xs text-gray-500 mt-6">
             Already have an account?{' '}
-            <Link href="/login" className="text-accent font-bold hover:underline">
+            <Link
+              href={
+                callbackUrl !== '/'
+                  ? `/login?callbackUrl=${encodeURIComponent(callbackUrl)}`
+                  : '/login'
+              }
+              className="text-accent font-bold hover:underline"
+            >
               Log in
             </Link>
           </p>

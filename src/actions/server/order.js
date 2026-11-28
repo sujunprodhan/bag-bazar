@@ -7,8 +7,12 @@ import { sendOrderConfirmationEmail } from '@/lib/mailer';
 
 export async function createOrderAction(orderData) {
   try {
-    const sessionId = await getSessionId(true);
     const authSession = await getAuthSession();
+    if (!authSession?.user) {
+      return { success: false, error: 'Please login or register before placing an order.' };
+    }
+
+    const sessionId = await getSessionId(true);
     const orderId = `BB-${Date.now().toString().slice(-6)}`;
 
     const doc = {
