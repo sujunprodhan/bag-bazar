@@ -1,7 +1,8 @@
 'use client';
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { FiEye, FiShoppingCart, FiHeart, FiLoader } from 'react-icons/fi';
+import { useRouter } from 'next/navigation';
+import { FiShoppingCart, FiHeart, FiLoader, FiZap } from 'react-icons/fi';
 import { useShop } from '@/context/ShopContext';
 import Image from 'next/image';
 
@@ -31,19 +32,32 @@ const colorHexMap = {
 };
 
 const ProductCard = ({ product, index = 0 }) => {
+  const router = useRouter();
   const { addToCart, toggleFavorite, isFavorite } = useShop();
   const [imgError, setImgError] = useState(false);
   const [adding, setAdding] = useState(false);
+  const [buying, setBuying] = useState(false);
   const wished = isFavorite(product._id);
   const mainImage = product.images?.[0] || null;
 
   const handleAddToCart = async () => {
-    if (adding || !product.inStock) return;
+    if (adding || buying || !product.inStock) return;
     setAdding(true);
     try {
       await addToCart(product);
     } finally {
       setAdding(false);
+    }
+  };
+
+  const handleBuyNow = async () => {
+    if (adding || buying || !product.inStock) return;
+    setBuying(true);
+    try {
+      await addToCart(product);
+      router.push('/checkout');
+    } finally {
+      setBuying(false);
     }
   };
 
@@ -165,18 +179,11 @@ const ProductCard = ({ product, index = 0 }) => {
         </div>
 
         <div className="grid grid-cols-2 gap-2">
-          <Link
-            href={`/product/${product._id}`}
-            className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl border border-gray-200 text-gray-700 hover:border-orange-400 hover:text-orange-500 text-xs font-semibold transition-all"
-          >
-            <FiEye className="text-sm" />
-            Details
-          </Link>
           <button
             type="button"
             onClick={handleAddToCart}
-            disabled={!product.inStock || adding}
-            className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-xs font-semibold shadow-sm transition-all disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
+            disabled={!product.inStock || adding || buying}
+            className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl border border-gray-200 text-gray-700 hover:border-orange-400 hover:text-orange-500 text-xs font-semibold transition-all disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
           >
             {adding ? (
               <>
@@ -186,7 +193,25 @@ const ProductCard = ({ product, index = 0 }) => {
             ) : (
               <>
                 <FiShoppingCart className="text-sm" />
-                <span>{product.inStock ? 'Add to Cart' : 'Sold Out'}</span>
+                <span>Add to Cart</span>
+              </>
+            )}
+          </button>
+          <button
+            type="button"
+            onClick={handleBuyNow}
+            disabled={!product.inStock || adding || buying}
+            className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-xs font-semibold shadow-sm transition-all disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
+          >
+            {buying ? (
+              <>
+                <FiLoader className="text-sm animate-spin" />
+                <span>Buying...</span>
+              </>
+            ) : (
+              <>
+                <FiZap className="text-sm" />
+                <span>{product.inStock ? 'Buy Now' : 'Sold Out'}</span>
               </>
             )}
           </button>

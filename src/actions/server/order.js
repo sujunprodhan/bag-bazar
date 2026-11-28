@@ -4,6 +4,7 @@ import { getAuthSession } from '@/lib/getAuthSession';
 import { collections, dbConnect } from '@/lib/dbConnect';
 import { getSessionId } from '@/lib/session';
 import { sendOrderConfirmationEmail } from '@/lib/mailer';
+import { sendOrderConfirmationSms } from '@/lib/sms';
 
 export async function createOrderAction(orderData) {
   try {
@@ -36,12 +37,16 @@ export async function createOrderAction(orderData) {
     await dbConnect(collections.ORDER).insertOne(doc);
     await dbConnect(collections.CART).deleteMany({ sessionId });
 
-    const emailResult = await sendOrderConfirmationEmail(doc);
+    const [emailResult, smsResult] = await Promise.all([
+      sendOrderConfirmationEmail(doc),
+      sendOrderConfirmationSms(doc),
+    ]);
 
     return {
       success: true,
       order: JSON.parse(JSON.stringify(doc)),
       confirmationEmailSent: Boolean(emailResult?.sent),
+      smsSent: Boolean(smsResult?.sent),
     };
   } catch (error) {
     console.error('Error creating order:', error);

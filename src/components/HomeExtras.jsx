@@ -14,50 +14,50 @@ import Container from '@/layout/Container';
 const trustFeatures = [
   {
     icon: FiTruck,
-    title: 'Nationwide Delivery',
-    desc: 'Fast doorstep delivery across all 64 districts in Bangladesh with Cash on Delivery.',
+    title: 'সারা দেশে ডেলিভারি',
+    desc: 'বাংলাদেশের ৬৪ জেলায় ক্যাশ অন ডেলিভারিসহ দ্রুত হোম ডেলিভারি।',
   },
   {
     icon: FiShield,
-    title: 'Premium Quality',
-    desc: 'Water-resistant fabrics, heavy-duty zippers, and reinforced stitching built to last.',
+    title: 'সেরা মানের নিশ্চয়তা',
+    desc: 'ওয়াটার-রেজিস্ট্যান্ট ফ্যাব্রিক, মজবুত জিপার এবং টেকসই সেলাইয়ের গ্যারান্টি।',
   },
   {
     icon: FiRefreshCw,
-    title: '7-Day Easy Exchange',
-    desc: 'Hassle-free replacement within 7 days if there is any sizing or quality issue.',
+    title: '৭ দিনের সহজ এক্সচেঞ্জ',
+    desc: 'সাইজ বা কোয়ালিটি নিয়ে কোনো সমস্যা হলে ৭ দিনের মধ্যে ঝামেলাহীন এক্সচেঞ্জ সুবিধা।',
   },
   {
     icon: FiHeadphones,
-    title: 'Dedicated Support',
-    desc: 'Friendly customer care available 7 days a week via phone, email, and social media.',
+    title: 'ডেডিকেটেড সাপোর্ট',
+    desc: 'সপ্তাহের ৭ দিনই ফোন, ইমেইল ও সোশ্যাল মিডিয়ার মাধ্যমে আমাদের আন্তরিক কাস্টমার কেয়ার।',
   },
 ];
 
 const testimonials = [
   {
-    name: 'Nusrat Jahan',
-    location: 'Dhaka',
-    product: 'Ladies Tote Bag',
+    name: 'নুসরাত জাহান',
+    location: 'ঢাকা',
+    product: 'লেডিস টোট ব্যাগ',
     avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
     quote:
-      'The stitching and leather finish exceeded my expectations! Delivered within 24 hours with Cash on Delivery.',
+      'ব্যাগটির সেলাই ও লেদার ফিনিশ আমার প্রত্যাশার চেয়েও ভালো ছিল! ক্যাশ অন ডেলিভারিতে ২৪ ঘণ্টার মধ্যেই হাতে পেয়েছি।',
   },
   {
-    name: 'Tanvir Ahmed',
-    location: 'Chattogram',
-    product: 'Urban Trek Backpack 40L',
+    name: 'তানভীর আহমেদ',
+    location: 'চট্টগ্রাম',
+    product: 'আরবান ট্রেক ব্যাকপ্যাক ৪০L',
     avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
     quote:
-      'Used this backpack on a 5-day trip to Sajek. Super comfortable straps and completely waterproof.',
+      'সাজেক ৫ দিনের ট্রিপে এই ব্যাকপ্যাকটি ব্যবহার করেছি। স্ট্র্যাপগুলো খুবই আরামদায়ক এবং সম্পূর্ণ ওয়াটারপ্রুফ।',
   },
   {
-    name: 'Farhana Islam',
-    location: 'Sylhet',
-    product: 'Trolley Luggage Set',
+    name: 'ফারহানা ইসলাম',
+    location: 'সিলেট',
+    product: 'ট্রলি লাগেজ সেট',
     avatar: 'https://randomuser.me/api/portraits/women/68.jpg',
     quote:
-      'Smooth wheels, sturdy handle, and paid easily via bKash. BagBazar is now my go-to bag store!',
+      'চাকাগুলো খুবই স্মুথ, হ্যান্ডেল মজবুত এবং বিকাশে সহজেই পেমেন্ট করেছি। ব্যাগবাজার এখন আমার পছন্দের ব্যাগ স্টোর!',
   },
 ];
 
@@ -74,14 +74,14 @@ export default function HomeExtras() {
               <div className="max-w-xl space-y-4">
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent/20 border border-accent/40 text-orange-300 text-xs font-bold uppercase tracking-wider">
                   <FiZap className="text-accent" />
-                  Season Special Offer
+                  সিজনাল স্পেশাল অফার
                 </span>
                 <h2 className="font-heading font-extrabold text-2xl sm:text-4xl leading-tight">
-                  Up to 35% Off on Travel &amp; Everyday Backpacks
+                  ট্রাভেল ও প্রতিদিনের ব্যাকপ্যাকে সর্বোচ্চ ৩৫% ছাড়
                 </h2>
                 <p className="text-white/75 text-sm sm:text-base leading-relaxed">
-                  Upgrade your daily commute or weekend getaway with durable, weather-ready bags.
-                  Pay easily with Cash on Delivery, bKash, Nagad, Rocket, or Upay.
+                  প্রতিদিনের যাতায়াত কিংবা ভ্রমণের জন্য নিন টেকসই ও ওয়েদার-রেডি ব্যাগ। সহজেই
+                  পেমেন্ট করুন ক্যাশ অন ডেলিভারি, বিকাশ, নগদ, রকেট অথবা উপায়ের মাধ্যমে।
                 </p>
               </div>
 
@@ -90,14 +90,14 @@ export default function HomeExtras() {
                   href="/product?category=travel-bag"
                   className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-accent hover:opacity-90 text-white font-bold text-sm shadow-lg transition-all"
                 >
-                  <span>Shop Travel Bags</span>
+                  <span>ট্রাভেল ব্যাগ দেখুন</span>
                   <FiArrowRight />
                 </Link>
                 <Link
                   href="/product"
                   className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold text-sm transition-all"
                 >
-                  All Collections
+                  সকল কালেকশন
                 </Link>
               </div>
             </div>
@@ -109,10 +109,10 @@ export default function HomeExtras() {
         <Container>
           <div className="text-center max-w-2xl mx-auto mb-10">
             <p className="text-accent text-xs font-bold tracking-widest uppercase mb-1">
-              The BagBazar Promise
+              ব্যাগবাজারের প্রতিশ্রুতি
             </p>
             <h2 className="font-heading font-extrabold text-2xl sm:text-3xl text-primary">
-              Why Shop With Us
+              কেন আমাদের থেকে কেনাকাটা করবেন?
             </h2>
           </div>
 
@@ -145,10 +145,10 @@ export default function HomeExtras() {
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
             <div>
               <p className="text-accent text-xs font-bold tracking-widest uppercase mb-1">
-                Verified Buyers
+                ভেরিফায়েড ক্রেতা
               </p>
               <h2 className="font-heading font-extrabold text-2xl sm:text-3xl text-primary">
-                Loved by Customers Across Bangladesh
+                সারা দেশের ক্রেতাদের ভালোবাসায়
               </h2>
             </div>
             <div className="flex items-center gap-2 text-sm font-semibold text-primary">
@@ -157,7 +157,7 @@ export default function HomeExtras() {
                   <FiStar key={i} className="fill-amber-400" />
                 ))}
               </div>
-              <span>4.9 / 5.0 Average Rating</span>
+              <span>৪.৯ / ৫.০ গড় রেটিং</span>
             </div>
           </div>
 

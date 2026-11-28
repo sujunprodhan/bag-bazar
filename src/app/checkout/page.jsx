@@ -70,7 +70,6 @@ export default function CheckoutPage() {
   const { cart, cartTotal, setCartDirect } = useShop();
 
   const [name, setName] = useState('');
-  const [email, setEmail] = useState(null);
   const [phone, setPhone] = useState('');
   const [area, setArea] = useState('dhaka');
   const [address, setAddress] = useState('');
@@ -81,7 +80,7 @@ export default function CheckoutPage() {
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [confirmedOrder, setConfirmedOrder] = useState(null);
-  const [confirmationEmailSent, setConfirmationEmailSent] = useState(false);
+  const [smsSent, setSmsSent] = useState(false);
   const [paymentSettings, setPaymentSettings] = useState(null);
   const [copiedNumber, setCopiedNumber] = useState(false);
 
@@ -97,7 +96,7 @@ export default function CheckoutPage() {
     };
   }, []);
 
-  const effectiveEmail = email !== null ? email : session?.user?.email || '';
+  const effectiveEmail = session?.user?.email || '';
 
   const resolvedPaymentMethods = paymentMethods
     .map((m) => {
@@ -131,12 +130,12 @@ export default function CheckoutPage() {
     setError('');
 
     if (!name.trim() || !phone.trim() || !address.trim()) {
-      setError('Please fill in your name, phone number, and delivery address.');
+      setError('অনুগ্রহ করে আপনার নাম, মোবাইল নাম্বার এবং ডেলিভারি ঠিকানা লিখুন।');
       return;
     }
 
     if (paymentMethod !== 'cod' && (!senderNumber.trim() || !trxId.trim())) {
-      setError(`Please enter your ${activePayment.name} number and Transaction ID.`);
+      setError(`অনুগ্রহ করে আপনার ${activePayment.name} নাম্বার এবং ট্রানজেকশন আইডি (TrxID) দিন।`);
       return;
     }
 
@@ -147,7 +146,7 @@ export default function CheckoutPage() {
       phone,
       address,
       note,
-      area: area === 'dhaka' ? 'Inside Dhaka' : 'Outside Dhaka',
+      area: area === 'dhaka' ? 'ঢাকা সিটির ভিতরে' : 'ঢাকা সিটির বাহিরে',
       paymentMethod,
       paymentName: activePayment.name,
       senderNumber: paymentMethod === 'cod' ? null : senderNumber,
@@ -160,13 +159,13 @@ export default function CheckoutPage() {
     setSubmitting(false);
 
     if (!res?.success) {
-      setError(res?.error || 'Could not place order. Please try again.');
+      setError(res?.error || 'অর্ডার সম্পন্ন করা যায়নি। আবার চেষ্টা করুন।');
       return;
     }
 
     setCartDirect([]);
     setConfirmedOrder(res.order);
-    setConfirmationEmailSent(Boolean(res.confirmationEmailSent));
+    setSmsSent(Boolean(res.smsSent));
   };
 
   if (confirmedOrder) {
@@ -178,50 +177,49 @@ export default function CheckoutPage() {
               <FiCheckCircle />
             </div>
             <h1 className="font-heading font-extrabold text-2xl sm:text-3xl text-gray-900">
-              Order Confirmed!
+              অর্ডার সম্পন্ন হয়েছে!
             </h1>
             <p className="text-gray-500 text-sm">
-              Thank you, <strong>{confirmedOrder.name}</strong>! Your order{' '}
-              <span className="font-bold text-orange-500">{confirmedOrder.orderId}</span> has been
-              received.
-              {confirmationEmailSent && confirmedOrder.userEmail && (
+              ধন্যবাদ, <strong>{confirmedOrder.name}</strong>! আপনার অর্ডার{' '}
+              <span className="font-bold text-orange-500">{confirmedOrder.orderId}</span> সফলভাবে
+              গ্রহণ করা হয়েছে।
+              {smsSent && (
                 <>
                   {' '}
-                  A confirmation email has been sent to{' '}
-                  <strong className="text-gray-700">{confirmedOrder.userEmail}</strong>.
+                  আপনার মোবাইল নাম্বারে (<strong className="text-gray-700">{confirmedOrder.phone}</strong>) কনফার্মেশন SMS পাঠানো হয়েছে।
                 </>
               )}
             </p>
 
             <div className="bg-gray-50 rounded-2xl p-5 text-left space-y-2 text-sm border border-gray-100">
               <div className="flex justify-between">
-                <span className="text-gray-500">Phone:</span>
+                <span className="text-gray-500">মোবাইল নাম্বার:</span>
                 <span className="font-semibold text-gray-900">{confirmedOrder.phone}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">Delivery Area:</span>
+                <span className="text-gray-500">ডেলিভারি এরিয়া:</span>
                 <span className="font-semibold text-gray-900">{confirmedOrder.area}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">Address:</span>
+                <span className="text-gray-500">ঠিকানা:</span>
                 <span className="font-semibold text-gray-900 text-right max-w-xs">
                   {confirmedOrder.address}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">Payment Method:</span>
+                <span className="text-gray-500">পেমেন্ট মাধ্যম:</span>
                 <span className="font-semibold text-orange-500">
                   {confirmedOrder.paymentName}
                 </span>
               </div>
               {confirmedOrder.trxId && (
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Transaction ID:</span>
+                  <span className="text-gray-500">ট্রানজেকশন আইডি:</span>
                   <span className="font-semibold text-gray-900">{confirmedOrder.trxId}</span>
                 </div>
               )}
               <div className="border-t border-gray-200 pt-2 flex justify-between font-extrabold text-base text-gray-900">
-                <span>Total Amount:</span>
+                <span>সর্বমোট:</span>
                 <span className="text-orange-500">
                   ৳{confirmedOrder.total.toLocaleString()}
                 </span>
@@ -237,13 +235,13 @@ export default function CheckoutPage() {
                 href="/product"
                 className="px-6 py-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm transition shadow-sm"
               >
-                Continue Shopping
+                আরও শপিং করুন
               </Link>
               <Link
                 href="/"
                 className="px-6 py-3 rounded-xl border border-gray-200 text-gray-700 hover:border-orange-400 hover:text-orange-500 font-semibold text-sm transition"
               >
-                Back to Home
+                হোমে ফিরে যান
               </Link>
             </div>
           </div>
@@ -285,30 +283,30 @@ export default function CheckoutPage() {
           href="/cart"
           className="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-orange-500 transition mb-6"
         >
-          <FiArrowLeft /> Back to Cart
+          <FiArrowLeft /> কার্টে ফিরে যান
         </Link>
 
-        <h1 className="font-heading font-extrabold text-3xl text-gray-900 mb-8">
-          Checkout
+        <h1 className="font-heading font-extrabold text-2xl sm:text-3xl text-gray-900 mb-8 text-center">
+          আপনার অর্ডারটি সম্পন্ন করুন
         </h1>
 
         <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           <div className="lg:col-span-7 space-y-6">
             <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-xs space-y-4">
-              <h2 className="font-heading font-bold text-lg text-gray-900 flex items-center gap-2">
+              <h2 className="font-heading font-bold text-lg text-gray-900 flex items-center gap-2 border-b border-gray-100 pb-3">
                 <FiTruck className="text-orange-500" />
-                Delivery Information
+                অর্ডার তথ্য
               </h2>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-                    Full Name *
+                    নাম *
                   </label>
                   <input
                     type="text"
                     required
-                    placeholder="Enter your name"
+                    placeholder="আপনার নাম"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-orange-400 focus:outline-none"
@@ -316,12 +314,12 @@ export default function CheckoutPage() {
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-                    Phone Number *
+                    মোবাইল নাম্বার *
                   </label>
                   <input
                     type="tel"
                     required
-                    placeholder="01XXXXXXXXX"
+                    placeholder="আপনার মোবাইল নাম্বার (01XXXXXXXXX)"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-orange-400 focus:outline-none"
@@ -331,20 +329,7 @@ export default function CheckoutPage() {
 
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-                  Email Address (for Order Confirmation &amp; Invoice)
-                </label>
-                <input
-                  type="email"
-                  placeholder="you@example.com"
-                  value={effectiveEmail}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-orange-400 focus:outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-                  Delivery Area *
+                  আপনার ডেলিভারি এরিয়া *
                 </label>
                 <div className="grid grid-cols-2 gap-3">
                   <button
@@ -356,8 +341,8 @@ export default function CheckoutPage() {
                         : 'border-gray-200 text-gray-600 hover:border-orange-300'
                     }`}
                   >
-                    <p className="font-bold">Inside Dhaka</p>
-                    <p className="text-xs text-gray-500">Delivery fee: ৳60</p>
+                    <p className="font-bold">ঢাকা সিটির ভিতরে</p>
+                    <p className="text-xs text-gray-500">ডেলিভারি চার্জ: ৳60</p>
                   </button>
                   <button
                     type="button"
@@ -368,20 +353,20 @@ export default function CheckoutPage() {
                         : 'border-gray-200 text-gray-600 hover:border-orange-300'
                     }`}
                   >
-                    <p className="font-bold">Outside Dhaka</p>
-                    <p className="text-xs text-gray-500">Delivery fee: ৳120</p>
+                    <p className="font-bold">ঢাকা সিটির বাহিরে</p>
+                    <p className="text-xs text-gray-500">ডেলিভারি চার্জ: ৳120</p>
                   </button>
                 </div>
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-                  Full Delivery Address *
+                  ঠিকানা *
                 </label>
                 <textarea
                   rows={2}
                   required
-                  placeholder="House, Road, Area, District..."
+                  placeholder="আপনার সম্পূর্ণ ঠিকানা (বাড়ি, রোড, এলাকা, জেলা)..."
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-orange-400 focus:outline-none"
@@ -390,11 +375,11 @@ export default function CheckoutPage() {
 
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-                  Order Note (Optional)
+                  অর্ডার নোট (ঐচ্ছিক)
                 </label>
                 <input
                   type="text"
-                  placeholder="Any special instruction..."
+                  placeholder="আপনার ডেলিভারি কোন নির্দেশনাসমূহ থাকলে এখানে লিখুন..."
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
                   className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-orange-400 focus:outline-none"
@@ -405,7 +390,7 @@ export default function CheckoutPage() {
             <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-xs space-y-4">
               <h2 className="font-heading font-bold text-lg text-gray-900 flex items-center gap-2">
                 <FiSmartphone className="text-orange-500" />
-                Payment Method
+                পেমেন্ট
               </h2>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -440,10 +425,10 @@ export default function CheckoutPage() {
                 <div className="p-4 rounded-xl bg-gray-50 border border-gray-200 space-y-3 animate-card-in">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <p className="text-xs text-gray-700 leading-relaxed">
-                      Please send{' '}
-                      <strong className="text-orange-500">৳{grandTotal.toLocaleString()}</strong> to{' '}
-                      <strong className="text-gray-900">{activePayment.accountNumber}</strong> via{' '}
-                      <strong>{activePayment.name}</strong> and provide the details below:
+                      অনুগ্রহ করে{' '}
+                      <strong className="text-orange-500">৳{grandTotal.toLocaleString()}</strong>{' '}
+                      পাঠান <strong className="text-gray-900">{activePayment.accountNumber}</strong>{' '}
+                      নাম্বারে (<strong>{activePayment.name}</strong>) এবং নিচে আপনার নাম্বার ও TrxID দিন:
                     </p>
                     <button
                       type="button"
@@ -455,12 +440,12 @@ export default function CheckoutPage() {
                       {copiedNumber ? (
                         <>
                           <FiCheck className="text-emerald-600" />
-                          <span>Copied</span>
+                          <span>কপি হয়েছে</span>
                         </>
                       ) : (
                         <>
                           <FiCopy />
-                          <span>Copy Number</span>
+                          <span>নাম্বার কপি করুন</span>
                         </>
                       )}
                     </button>
@@ -468,7 +453,7 @@ export default function CheckoutPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <label className="block text-xs font-semibold text-gray-700 mb-1">
-                        Your {activePayment.name} Number *
+                        আপনার {activePayment.name} নাম্বার *
                       </label>
                       <input
                         type="tel"
@@ -481,7 +466,7 @@ export default function CheckoutPage() {
                     </div>
                     <div>
                       <label className="block text-xs font-semibold text-gray-700 mb-1">
-                        Transaction ID (TrxID) *
+                        ট্রানজেকশন আইডি (TrxID) *
                       </label>
                       <input
                         type="text"
@@ -507,7 +492,7 @@ export default function CheckoutPage() {
           <div className="lg:col-span-5">
             <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-xs sticky top-24 space-y-5">
               <h2 className="font-heading font-bold text-lg text-gray-900 border-b border-gray-100 pb-3">
-                Order Summary ({cart.length} items)
+                অর্ডার বিস্তারিত ({cart.length} টি পণ্য)
               </h2>
 
               <div className="space-y-3 max-h-72 overflow-y-auto pr-1">
@@ -540,17 +525,17 @@ export default function CheckoutPage() {
 
               <div className="border-t border-gray-100 pt-4 space-y-2 text-sm">
                 <div className="flex justify-between text-gray-600">
-                  <span>Subtotal</span>
+                  <span>প্রোডাক্টের দাম:</span>
                   <span className="font-semibold text-gray-900">
                     ৳{cartTotal.toLocaleString()}
                   </span>
                 </div>
                 <div className="flex justify-between text-gray-600">
-                  <span>Delivery Charge</span>
+                  <span>ডেলিভারি চার্জ:</span>
                   <span className="font-semibold text-gray-900">৳{deliveryFee}</span>
                 </div>
                 <div className="border-t border-gray-100 pt-3 flex justify-between text-base font-extrabold text-gray-900">
-                  <span>Total Payable</span>
+                  <span>সর্বমোট :</span>
                   <span className="text-orange-500">৳{grandTotal.toLocaleString()}</span>
                 </div>
               </div>
@@ -560,7 +545,9 @@ export default function CheckoutPage() {
                 disabled={submitting}
                 className="w-full py-3.5 rounded-xl bg-orange-500 hover:bg-orange-600 disabled:opacity-60 text-white font-bold text-sm shadow-md transition-all cursor-pointer"
               >
-                {submitting ? 'Placing Order...' : `Confirm Order (৳${grandTotal.toLocaleString()})`}
+                {submitting
+                  ? 'অর্ডার পাঠানো হচ্ছে...'
+                  : `অর্ডার করুন (৳${grandTotal.toLocaleString()})`}
               </button>
             </div>
           </div>

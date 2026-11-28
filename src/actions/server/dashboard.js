@@ -5,6 +5,7 @@ import { getAuthSession } from '@/lib/getAuthSession';
 import { collections, dbConnect } from '@/lib/dbConnect';
 import { getSessionId } from '@/lib/session';
 import { sendOrderInvoiceEmail } from '@/lib/mailer';
+import { sendOrderApprovedSms } from '@/lib/sms';
 import { getAdminChatThreadsAction } from '@/actions/server/chat';
 import { getPaymentSettingsAction } from '@/actions/server/settings';
 
@@ -121,14 +122,22 @@ export async function updateOrderStatusAction(orderId, status) {
     );
 
     let emailResult = null;
+    let smsResult = null;
     if (status === 'approved') {
       const updatedOrder = await orderCol.findOne({ _id: new ObjectId(orderId) });
       if (updatedOrder) {
-        emailResult = await sendOrderInvoiceEmail(updatedOrder);
+        [emailResult, smsResult] = await Promise.all([
+          sendOrderInvoiceEmail(updatedOrder),
+          sendOrderApprovedSms(updatedOrder),
+        ]);
       }
     }
 
-    return { success: true, invoiceEmailSent: Boolean(emailResult?.sent) };
+    return {
+      success: true,
+      invoiceEmailSent: Boolean(emailResult?.sent),
+      smsSent: Boolean(smsResult?.sent),
+    };
   } catch (error) {
     console.error('Error updating order status:', error);
     return { success: false, error: 'Failed to update order status' };

@@ -122,7 +122,7 @@ const ProductFilterClient = ({ initialProducts = [] }) => {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      <section className="relative overflow-hidden bg-primary text-white py-12 sm:py-16">
+      <section className="relative overflow-hidden bg-primary text-white py-20 sm:py-28 lg:py-32 min-h-[420px] sm:min-h-[500px] lg:min-h-[540px] flex items-center">
         {heroProducts.map((hp, idx) => (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -132,18 +132,18 @@ const ProductFilterClient = ({ initialProducts = [] }) => {
             aria-hidden="true"
             className={`absolute inset-0 w-full h-full object-cover transition-all duration-1000 ease-in-out pointer-events-none ${
               idx === heroIndex % heroProducts.length
-                ? 'opacity-25 scale-105'
+                ? 'opacity-65 scale-105'
                 : 'opacity-0 scale-100'
             }`}
           />
         ))}
 
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0B2135]/95 via-[#0F2A43]/85 to-[#0F2A43]/70 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0B2135]/80 via-[#0F2A43]/55 to-[#0F2A43]/30 pointer-events-none" />
         <div className="absolute -right-24 -top-24 w-80 h-80 rounded-full bg-accent/25 blur-3xl pointer-events-none" />
 
-        <div className="max-w-[2520px] mx-auto xl:px-20 md:px-10 sm:px-2 px-4 relative z-10">
+        <div className="w-full max-w-[2520px] mx-auto xl:px-20 md:px-10 sm:px-4 px-4 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            <div className="lg:col-span-7 space-y-4">
+            <div className="lg:col-span-7 space-y-5">
               <div className="flex items-center gap-2 text-xs font-semibold text-white/70">
                 <Link href="/" className="hover:text-accent transition-colors">
                   Home
@@ -151,10 +151,10 @@ const ProductFilterClient = ({ initialProducts = [] }) => {
                 <span>/</span>
                 <span className="text-accent">Products</span>
               </div>
-              <h1 className="font-heading font-extrabold text-3xl sm:text-5xl leading-tight">
+              <h1 className="font-heading font-extrabold text-4xl sm:text-5xl lg:text-6xl leading-tight">
                 {selectedCategory === 'all' ? 'Explore All Bags' : activeCategoryLabel}
               </h1>
-              <p className="text-white/80 text-sm sm:text-base max-w-xl">
+              <p className="text-white/80 text-base sm:text-lg max-w-xl">
                 Showing {filteredProducts.length} of {initialProducts.length} premium products crafted
                 for daily commute, travel, and lifestyle.
               </p>
@@ -177,9 +177,9 @@ const ProductFilterClient = ({ initialProducts = [] }) => {
                 <Link
                   href={`/product/${activeHeroProduct._id}`}
                   key={activeHeroProduct._id}
-                  className="animate-card-in w-full max-w-sm bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 flex items-center gap-4 hover:bg-white/15 transition-all group shadow-2xl"
+                  className="animate-card-in w-full max-w-lg bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 flex items-center gap-5 hover:bg-white/15 transition-all group shadow-2xl"
                 >
-                  <div className="w-24 h-24 rounded-xl bg-white overflow-hidden shrink-0 relative">
+                  <div className="w-32 h-32 sm:w-44 sm:h-44 rounded-xl bg-white overflow-hidden shrink-0 relative">
                     <img
                       src={activeHeroProduct.images[0]}
                       alt={activeHeroProduct.name}
@@ -187,14 +187,14 @@ const ProductFilterClient = ({ initialProducts = [] }) => {
                     />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <span className="text-[10px] font-bold text-orange-300 uppercase tracking-widest">
+                    <span className="text-[11px] font-bold text-orange-300 uppercase tracking-widest">
                       {activeHeroProduct.category?.replace(/-/g, ' ')}
                     </span>
-                    <p className="font-bold text-sm text-white line-clamp-2 leading-snug mt-0.5">
+                    <p className="font-bold text-base sm:text-lg text-white line-clamp-2 leading-snug mt-1">
                       {activeHeroProduct.name}
                     </p>
-                    <div className="flex items-center justify-between mt-2">
-                      <span className="font-extrabold text-base text-orange-400">
+                    <div className="flex items-center justify-between mt-3">
+                      <span className="font-extrabold text-lg sm:text-xl text-orange-400">
                         ৳{activeHeroProduct.price?.toLocaleString()}
                       </span>
                       <span className="inline-flex items-center gap-1 text-xs font-semibold text-white/80 group-hover:text-white">
@@ -384,7 +384,7 @@ const ProductFilterClient = ({ initialProducts = [] }) => {
                 </button>
               </div>
             ) : viewMode === 'grid' ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {filteredProducts.map((product, idx) => (
                   <ProductCard key={`${selectedCategory}-${product._id}`} product={product} index={idx} />
                 ))}

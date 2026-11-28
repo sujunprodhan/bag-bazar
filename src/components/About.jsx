@@ -39,7 +39,15 @@ const values = [
 const About = () => {
   return (
     <div className="bg-gray-50 min-h-screen">
-      <section className="relative overflow-hidden bg-primary text-white py-16 sm:py-20">
+      <section className="relative overflow-hidden bg-primary text-white py-20 sm:py-28 min-h-[380px] sm:min-h-[460px] lg:min-h-[520px] flex items-center">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/bagbarzerhero3.webp"
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 w-full h-full object-cover object-center opacity-50 pointer-events-none"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0B2135]/80 via-[#0F2A43]/55 to-[#0F2A43]/30 pointer-events-none" />
         <div className="absolute -right-24 -top-24 w-80 h-80 rounded-full bg-accent/20 blur-3xl pointer-events-none" />
         <div className="absolute -left-24 -bottom-24 w-72 h-72 rounded-full bg-white/10 blur-3xl pointer-events-none" />
         <Container>

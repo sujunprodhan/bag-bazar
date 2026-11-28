@@ -32,36 +32,29 @@ const CategoryCard = ({ cat }) => {
   return (
     <Link
       href={`/product?category=${encodeURIComponent(cat.slug)}`}
-      className="flex-shrink-0 w-44 h-60 rounded-3xl overflow-hidden relative group cursor-pointer shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300"
+      className="bg-white rounded-2xl border border-gray-100 hover:border-orange-300 hover:shadow-md p-4 sm:p-5 flex flex-col items-center justify-between transition-all duration-200 group"
     >
-      <div className={`absolute inset-0 bg-linear-to-b ${cat.linear}`} />
-
-      {cat.image && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={cat.image}
-          alt={cat.label}
-          referrerPolicy="no-referrer"
-          className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-        />
-      )}
-
-      <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/25 to-black/10" />
-
-      <div className="absolute top-1/2 -translate-y-4 left-4">
-        <div className="w-10 h-10 rounded-xl bg-white/25 backdrop-blur-md border border-white/35 flex items-center justify-center group-hover:bg-white/35 transition-colors shadow-sm">
-          <Icon className="text-white text-lg" />
-        </div>
+      <div className="w-full aspect-square flex items-center justify-center overflow-hidden mb-3">
+        {cat.image ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={cat.image}
+            alt={cat.label}
+            referrerPolicy="no-referrer"
+            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+          />
+        ) : (
+          <div
+            className={`w-16 h-16 rounded-2xl bg-linear-to-b ${cat.linear} flex items-center justify-center shadow-xs`}
+          >
+            <Icon className="text-white text-2xl" />
+          </div>
+        )}
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0 p-4">
-        <p className="text-white font-bold text-base leading-tight mb-1 drop-shadow-xs">
-          {cat.label}
-        </p>
-        <p className="text-white/80 text-xs font-medium">
-          {cat.count} {cat.count === 1 ? 'Product' : 'Products'}
-        </p>
-      </div>
+      <p className="text-sm sm:text-base font-semibold text-gray-600 group-hover:text-orange-500 text-center leading-snug line-clamp-2 transition-colors">
+        {cat.label}
+      </p>
     </Link>
   );
 };
@@ -110,27 +103,32 @@ const CategoryMarquee = ({ products = [] }) => {
     }));
   }, [products]);
 
-  const doubled = [...categories, ...categories];
+  const visibleCategories = categories.slice(0, 12);
 
   return (
-    <section className="bg-white py-12 border-t border-gray-100 overflow-hidden">
+    <section className="bg-gray-50/60 py-12 border-t border-gray-100">
       <Container>
-        <div className="mb-7">
-          <p className="text-orange-500 text-xs font-bold tracking-widest uppercase mb-1">Browse</p>
-          <h2 className="font-extrabold text-2xl sm:text-3xl text-gray-900">Shop By Category</h2>
+        <div className="text-center mb-8">
+          <h2 className="font-heading font-extrabold text-2xl sm:text-3xl text-gray-900">
+            Popular Categories
+          </h2>
         </div>
-      </Container>
 
-      <div className="relative overflow-hidden">
-        <div className="pointer-events-none absolute left-0 top-0 h-full w-20 bg-linear-to-r from-white to-transparent z-10" />
-        <div className="pointer-events-none absolute right-0 top-0 h-full w-20 bg-linear-to-l from-white to-transparent z-10" />
-
-        <div className="flex gap-4 w-max animate-marquee-left px-4">
-          {doubled.map((cat, i) => (
-            <CategoryCard key={`${cat.slug}-${i}`} cat={cat} />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5">
+          {visibleCategories.map((cat) => (
+            <CategoryCard key={cat.slug} cat={cat} />
           ))}
         </div>
-      </div>
+
+        <div className="mt-8 text-center">
+          <Link
+            href="/product"
+            className="inline-block bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs sm:text-sm px-6 py-3 rounded-lg shadow-xs transition"
+          >
+            View More Collections
+          </Link>
+        </div>
+      </Container>
     </section>
   );
 };

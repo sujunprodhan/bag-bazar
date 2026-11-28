@@ -8,8 +8,8 @@ const HomeProducts = async () => {
   const products = (await getProduct()) || [];
   return (
     <>
-      <HomeCategorySection products={products} />
       <CategoryMarquee products={products} />
+      <HomeCategorySection products={products} />
       <HomeFeaturedSections products={products} />
     </>
   );

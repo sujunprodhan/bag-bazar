@@ -184,10 +184,14 @@ export default function AdminDashboardClient({ user, initialData }) {
     const res = await updateOrderStatusAction(orderId, newStatus);
     if (res.success) {
       if (newStatus === 'approved') {
+        const sentChannels = [
+          res.smsSent ? 'SMS' : null,
+          res.invoiceEmailSent ? 'Email' : null,
+        ].filter(Boolean);
         showNotice(
-          res.invoiceEmailSent
-            ? 'Order approved & invoice sent to customer email!'
-            : 'Order approved! (Configure SMTP in .env to email invoice)'
+          sentChannels.length > 0
+            ? `Order approved & confirmation sent via ${sentChannels.join(' + ')}!`
+            : 'Order approved! (Configure SMS_API_KEY / SMTP in .env for live SMS/email)'
         );
       } else {
         showNotice(`Order status updated to "${newStatus}"`);
