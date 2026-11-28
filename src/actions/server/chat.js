@@ -2,16 +2,41 @@
 
 import { collections, dbConnect } from '@/lib/dbConnect';
 import { getAuthSession } from '@/lib/getAuthSession';
+import { getSessionId } from '@/lib/session';
+
+async function resolveUserConversation(createIfMissing = false) {
+  const authSession = await getAuthSession();
+  const userEmail = authSession?.user?.email?.trim().toLowerCase();
+
+  if (userEmail) {
+    return {
+      authSession,
+      conversationId: userEmail,
+      senderName: authSession.user.name || userEmail,
+      userEmail,
+    };
+  }
+
+  const sessionId = await getSessionId(createIfMissing);
+  if (!sessionId) {
+    return { authSession, conversationId: null, senderName: 'Guest Visitor', userEmail: 'Guest' };
+  }
+
+  return {
+    authSession,
+    conversationId: `guest:${sessionId}`,
+    senderName: 'Guest Visitor',
+    userEmail: 'Guest Visitor',
+  };
+}
 
 export async function getUserChatMessagesAction() {
   try {
-    const authSession = await getAuthSession();
-    const userEmail = authSession?.user?.email?.trim().toLowerCase();
-
-    if (!userEmail) return [];
+    const { conversationId } = await resolveUserConversation(false);
+    if (!conversationId) return [];
 
     const messages = await dbConnect(collections.CHAT)
-      .find({ conversationId: userEmail })
+      .find({ conversationId })
       .sort({ createdAt: 1 })
       .toArray();
 
@@ -22,31 +47,41 @@ export async function getUserChatMessagesAction() {
   }
 }
 
-export async function sendChatMessageAction({ text, targetConversationId }) {
+export async function sendChatMessageAction({ text, guestName, targetConversationId }) {
   try {
     const cleanText = text?.trim();
     if (!cleanText) return { success: false, error: 'Message cannot be empty' };
 
     const authSession = await getAuthSession();
-    if (!authSession?.user?.email) {
-      return {
-        success: false,
-        error: 'Please log in or register first to chat with admin.',
-      };
+    const isAdmin = authSession?.user?.role === 'admin' && Boolean(targetConversationId);
+
+    let conversationId;
+    let senderName;
+    let userEmail;
+
+    if (isAdmin) {
+      conversationId = targetConversationId;
+      senderName = authSession.user.name || 'BagBazar Admin';
+      userEmail = targetConversationId;
+    } else {
+      const resolved = await resolveUserConversation(true);
+      conversationId = resolved.conversationId;
+      senderName =
+        authSession?.user?.email
+          ? resolved.senderName
+          : guestName?.trim() || resolved.senderName;
+      userEmail = resolved.userEmail;
     }
 
-    const isAdmin = authSession.user.role === 'admin' && Boolean(targetConversationId);
-    const conversationId = isAdmin
-      ? targetConversationId
-      : authSession.user.email.trim().toLowerCase();
+    if (!conversationId) {
+      return { success: false, error: 'Could not start chat session.' };
+    }
 
     const doc = {
       conversationId,
       senderRole: isAdmin ? 'admin' : 'user',
-      senderName: isAdmin
-        ? authSession.user.name || 'BagBazar Admin'
-        : authSession.user.name || authSession.user.email,
-      userEmail: conversationId,
+      senderName,
+      userEmail,
       text: cleanText,
       createdAt: new Date(),
     };

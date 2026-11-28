@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
-import { FiHeadphones, FiX, FiSend, FiLoader, FiLock } from 'react-icons/fi';
+import { FiHeadphones, FiX, FiSend, FiLoader } from 'react-icons/fi';
 import { FaWhatsapp } from 'react-icons/fa';
 import { getUserChatMessagesAction, sendChatMessageAction } from '@/actions/server/chat';
 
@@ -14,6 +14,7 @@ export default function LiveChatWidget() {
   const { data: session, status } = useSession();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([]);
+  const [guestName, setGuestName] = useState('');
   const [text, setText] = useState('');
   const [sending, setSending] = useState(false);
   const [chatError, setChatError] = useState('');
@@ -23,7 +24,7 @@ export default function LiveChatWidget() {
   const isLoggedIn = status === 'authenticated' && Boolean(session?.user?.email);
 
   useEffect(() => {
-    if (!open || isAdmin || !isLoggedIn) return;
+    if (!open || isAdmin) return;
     let active = true;
 
     const load = async () => {
@@ -37,22 +38,22 @@ export default function LiveChatWidget() {
       active = false;
       clearInterval(timer);
     };
-  }, [open, isAdmin, isLoggedIn]);
+  }, [open, isAdmin]);
 
   useEffect(() => {
-    if (open && isLoggedIn) {
+    if (open) {
       bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [messages.length, open, isLoggedIn]);
+  }, [messages.length, open]);
 
   const handleSend = async (e) => {
     e.preventDefault();
-    if (!text.trim() || sending || !isLoggedIn) return;
+    if (!text.trim() || sending) return;
     setChatError('');
     const msg = text.trim();
     setText('');
     setSending(true);
-    const res = await sendChatMessageAction({ text: msg });
+    const res = await sendChatMessageAction({ text: msg, guestName });
     setSending(false);
     if (res?.success && Array.isArray(res.messages)) {
       setMessages(res.messages);
@@ -73,7 +74,7 @@ export default function LiveChatWidget() {
                 <p className="text-[11px] text-white/70">
                   {isLoggedIn
                     ? `Chatting as ${session.user.name || session.user.email}`
-                    : 'Login required to chat'}
+                    : 'Online • Chat with Admin'}
                 </p>
               </div>
             </div>
@@ -87,38 +88,7 @@ export default function LiveChatWidget() {
             </button>
           </div>
 
-          {!isLoggedIn ? (
-            <div className="p-6 text-center space-y-4 bg-gray-50">
-              <div className="w-12 h-12 rounded-2xl bg-orange-50 text-accent flex items-center justify-center mx-auto text-xl border border-orange-100">
-                <FiLock />
-              </div>
-              <div className="space-y-1">
-                <h3 className="font-heading font-bold text-base text-primary">
-                  Login or Register to Chat
-                </h3>
-                <p className="text-xs text-muted leading-relaxed">
-                  Please log in or create an account to send live messages and view your chat
-                  history with our admin.
-                </p>
-              </div>
-              <div className="grid grid-cols-2 gap-2.5">
-                <Link
-                  href="/login"
-                  onClick={() => setOpen(false)}
-                  className="py-2.5 px-3 rounded-xl bg-primary text-white text-xs font-bold hover:opacity-90 transition text-center"
-                >
-                  Log in
-                </Link>
-                <Link
-                  href="/register"
-                  onClick={() => setOpen(false)}
-                  className="py-2.5 px-3 rounded-xl bg-accent text-white text-xs font-bold hover:opacity-90 transition text-center"
-                >
-                  Register
-                </Link>
-              </div>
-            </div>
-          ) : isAdmin ? (
+          {isAdmin ? (
             <div className="p-6 text-center space-y-3 bg-gray-50">
               <p className="text-sm font-bold text-primary">You are signed in as Admin</p>
               <p className="text-xs text-muted">
@@ -136,9 +106,22 @@ export default function LiveChatWidget() {
             <>
               <div className="h-72 overflow-y-auto p-4 space-y-3 bg-gray-50">
                 {messages.length === 0 ? (
-                  <div className="text-center text-xs text-muted py-10 space-y-1">
-                    <p className="font-semibold text-primary">Hello {session.user.name}!</p>
-                    <p>Send a message and our admin will reply live.</p>
+                  <div className="text-center text-xs text-muted py-6 space-y-3">
+                    <div className="space-y-1">
+                      <p className="font-semibold text-primary">
+                        Hello {isLoggedIn ? session.user.name : guestName || 'there'}!
+                      </p>
+                      <p>Send a message and our admin will reply live.</p>
+                    </div>
+                    {!isLoggedIn && (
+                      <input
+                        type="text"
+                        placeholder="Your name (optional)"
+                        value={guestName}
+                        onChange={(e) => setGuestName(e.target.value)}
+                        className="w-full max-w-[220px] mx-auto px-3 py-1.5 rounded-lg border border-gray-200 bg-white text-xs text-gray-800 focus:border-accent focus:outline-none"
+                      />
+                    )}
                   </div>
                 ) : (
                   messages.map((m, idx) => {

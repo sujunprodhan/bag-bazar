@@ -1,13 +1,11 @@
 'use client';
 import React from 'react';
 import Link from 'next/link';
-import { useSession } from 'next-auth/react';
-import { FiShoppingCart, FiTrash2, FiMinus, FiPlus, FiArrowRight, FiArrowLeft, FiLock } from 'react-icons/fi';
+import { FiShoppingCart, FiTrash2, FiMinus, FiPlus, FiArrowRight, FiArrowLeft } from 'react-icons/fi';
 import { useShop } from '@/context/ShopContext';
 import Container from '@/layout/Container';
 
 export default function CartPage() {
-  const { status } = useSession();
   const { cart, cartTotal, cartCount, removeFromCart, updateQuantity, clearCart } = useShop();
 
   return (
@@ -173,35 +171,13 @@ export default function CartPage() {
                   </div>
                 </div>
 
-                {status === 'authenticated' ? (
-                  <Link
-                    href="/checkout"
-                    className="w-full flex items-center justify-center gap-2 py-3.5 px-5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm shadow-md transition-all"
-                  >
-                    Proceed to Checkout
-                    <FiArrowRight />
-                  </Link>
-                ) : (
-                  <div className="space-y-2.5">
-                    <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 flex items-center gap-2">
-                      <FiLock className="shrink-0" />
-                      <span>Please login or register to proceed to checkout.</span>
-                    </p>
-                    <Link
-                      href="/login?callbackUrl=/checkout"
-                      className="w-full flex items-center justify-center gap-2 py-3.5 px-5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm shadow-md transition-all"
-                    >
-                      Login to Checkout
-                      <FiArrowRight />
-                    </Link>
-                    <Link
-                      href="/register?callbackUrl=/checkout"
-                      className="w-full flex items-center justify-center gap-2 py-2.5 px-5 rounded-xl border border-gray-200 hover:border-orange-400 text-gray-700 hover:text-orange-500 font-semibold text-xs transition-all"
-                    >
-                      Create New Account
-                    </Link>
-                  </div>
-                )}
+                <Link
+                  href="/checkout"
+                  className="w-full flex items-center justify-center gap-2 py-3.5 px-5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm shadow-md transition-all"
+                >
+                  Order Now
+                  <FiArrowRight />
+                </Link>
               </div>
             </div>
           </div>
